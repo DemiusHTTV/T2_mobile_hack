@@ -20,6 +20,7 @@
                 <a href="#" class="menu-link" data-target="team">Команда</a>
                 <a href="#" class="menu-link" data-target="settings">Настройки</a>
                 <a href="#" class="menu-link" data-target="rating">Рейтинг</a>
+                <a href="#" class="menu-link ai-mobile-link" id="open-ai-mobile">AI Assistant </a>
             </nav>
         </aside>
 
@@ -29,10 +30,21 @@
                     <span></span><span></span><span></span>
                 </div>
                 <h1 class="page-title" id="main-title">Апрель 2026</h1>
+
                 <div class="mobile-welcome" id="mobile-welcome">Привет!</div>
                 <div class="user-info">
                     <span class="user-name-desktop" id="user-name-desktop">Привет!</span>
                     <div class="user-avatar" id="user-avatar">??</div>
+
+                <div class="mobile-welcome">Привет, Дмитрий!</div>
+                
+                <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+                    <button id="open-ai-btn" class="btn-ai-assistant">AI Assistant</button>
+                    <div class="user-info">
+                        <span class="user-name-desktop">Привет, Дмитрий!</span>
+                        <div class="user-avatar">ДТ</div>
+                    </div>
+
                 </div>
             </header>
 
@@ -128,6 +140,7 @@
         </div>
     </div>
 
+
     <div class="modal-overlay" id="workload-modal">
         <div class="modal-window">
             <div class="modal-header">
@@ -167,6 +180,20 @@
                     <button type="button" class="btn-sub" id="workload-cancel">Отмена</button>
                 </div>
             </form>
+
+    <div class="chat-overlay" id="ai-assistant-modal">
+        <div class="chat-window">
+            <div class="chat-header">
+                <span class="chat-title">Smart Assistant</span>
+                <button id="close-ai-chat" class="chat-close-btn">×</button>
+            </div>
+            <div class="chat-messages" id="ai-messages">
+                <div class="msg bot">Привет! Я твой AI ассистент. Чем могу помочь?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="ai-input" placeholder="Спросите что-нибудь..."><button id="ai-send-btn">➤</button>
+            </div>
+
         </div>
     </div>
 
@@ -174,7 +201,9 @@
         const grid = document.getElementById('calendar-grid');
         const modal = document.getElementById('modal-shift');
         const chatBot = document.getElementById('chat-bot');
+        const aiModal = document.getElementById('ai-assistant-modal');
         const chatMessages = document.getElementById('chat-messages');
+        const aiMessages = document.getElementById('ai-messages');
         const burger = document.getElementById('burger-btn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
@@ -194,6 +223,10 @@
         let selectedDayCell = null;
 
         const closeChat = document.getElementById('close-chat');
+        const closeAiChat = document.getElementById('close-ai-chat');
+        const openAiBtn = document.getElementById('open-ai-btn');
+        const openAiMobile = document.getElementById('open-ai-mobile');
+        
         let selectedDayCell = null;
 
 
@@ -202,8 +235,18 @@
         for(let d=1; d<=31; d++) {
             const cell = document.createElement('div');
             cell.className = 'day-cell';
-            if(d % 4 === 0) cell.classList.add('has-shift');
-            cell.innerHTML = `<span>${d}</span>${d % 4 === 0 ? '<span class="shift-tag">СМЕНА</span>' : ''}`;
+            
+            // Выделение текущего дня (синяя рамка)
+            if(d === 10) cell.classList.add('today'); 
+            
+            // Расстановка смен (каждый 4-й день)
+            if(d % 4 === 0) {
+                cell.classList.add('work-day'); // Зеленый цвет по умолчанию для смен
+                cell.innerHTML = `<span>${d}</span><span class="shift-tag">СМЕНА</span>`;
+            } else {
+                cell.innerHTML = `<span>${d}</span>`;
+            }
+
             cell.onclick = () => {
                 selectedDayCell = cell;
                 document.getElementById('modal-date-text').textContent = `Смена: ${d} апреля`;
@@ -212,7 +255,16 @@
             grid.appendChild(cell);
         }
 
-        // Бургер-меню
+        // Логика подтверждения смены
+        document.getElementById('btn-confirm-shift').onclick = () => {
+            if(selectedDayCell) {
+                selectedDayCell.className = 'day-cell work-day confirmed'; 
+                selectedDayCell.querySelector('.shift-tag').textContent = 'ПРИНЯТО';
+                modal.classList.remove('show');
+            }
+        };
+
+        // Бургер
         function toggleMenu() {
             sidebar.classList.toggle('show');
             overlay.classList.toggle('show');
@@ -497,6 +549,7 @@
         // Навигация
         document.querySelectorAll('.menu-link').forEach(link => {
             link.onclick = (e) => {
+                if(link.id === 'open-ai-mobile') return;
                 e.preventDefault();
                 document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
                 document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
@@ -506,20 +559,33 @@
             };
         });
 
-        // Модалка и Чат
+        // Закрытие
         document.getElementById('close-modal').onclick = () => modal.classList.remove('show');
+
         document.getElementById('btn-confirm-shift').onclick = () => {
             selectedDayCell.className = 'day-cell work-day';
             selectedDayCell.querySelector('.shift-tag').textContent = 'ПРИНЯТО';
             modal.classList.remove('show');
         };
 
+
+        closeChat.onclick = () => chatBot.classList.remove('show');
+        closeAiChat.onclick = () => aiModal.classList.remove('show');
+
+        // Открытие чатов
+
         document.getElementById('btn-need-sub').onclick = () => {
             modal.classList.remove('show');
             chatBot.classList.add('show');
         };
-        closeChat.onclick = () => chatBot.classList.remove('show');
-        
+        openAiBtn.onclick = () => aiModal.classList.add('show');
+        openAiMobile.onclick = (e) => {
+            e.preventDefault();
+            aiModal.classList.add('show');
+            toggleMenu();
+        };
+
+        // Чат подмены
         document.getElementById('send-btn').onclick = function() {
 
             const val = document.getElementById('user-input').value.trim();
@@ -535,6 +601,20 @@
                     selectedDayCell.querySelector('.shift-tag').textContent = 'ПОИСК...';
                 }
                 setTimeout(() => chatBot.classList.remove('show'), 1500);
+            }, 800);
+        };
+
+        // Чат AI
+        document.getElementById('ai-send-btn').onclick = function() {
+            const val = document.getElementById('ai-input').value.trim();
+            if(!val) return;
+            const uM = document.createElement('div'); uM.className = 'msg user'; uM.textContent = val;
+            aiMessages.appendChild(uM);
+            document.getElementById('ai-input').value = '';
+            setTimeout(() => {
+                const bM = document.createElement('div'); bM.className = 'msg bot'; bM.textContent = 'Я анализирую данные системы... Чем ещё могу помочь?';
+                aiMessages.appendChild(bM);
+                aiMessages.scrollTop = aiMessages.scrollHeight;
             }, 800);
         };
     </script>
