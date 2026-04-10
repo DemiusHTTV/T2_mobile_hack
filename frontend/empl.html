@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSheet | WorkSpace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="empl.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar-overlay" id="overlay"></div>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="logo-sidebar">SMARTSHEET</div>
+            <nav class="menu" id="menu">
+                <a href="#" class="menu-link active" data-target="schedule">Мой график</a>
+                <a href="#" class="menu-link" data-target="team">Команда</a>
+                <a href="#" class="menu-link" data-target="settings">Настройки</a>
+                <a href="#" class="menu-link" data-target="rating">Рейтинг</a>
+                <a href="#" class="menu-link ai-mobile-link" id="open-ai-mobile">AI Assistant</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="burger-menu" id="burger-btn">
+                    <span></span><span></span><span></span>
+                </div>
+                <h1 class="page-title" id="main-title">Апрель 2026</h1>
+
+                <div class="mobile-welcome" id="mobile-welcome">Привет!</div>
+
+                <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+                    <button id="role-action-btn" class="btn-role-action">Действие</button>
+                    <button id="open-ai-btn" class="btn-ai-assistant">AI Assistant</button>
+                    <div class="user-info">
+                        <span class="user-name-desktop" id="user-name-desktop">Привет!</span>
+                        <div class="user-avatar" id="user-avatar">??</div>
+                    </div>
+                </div>
+            </header>
+
+            <section class="content-section active" id="schedule">
+                <div class="calendar-wrapper">
+                    <div class="calendar-grid" id="calendar-grid">
+                        <div class="weekday">Пн</div><div class="weekday">Вт</div><div class="weekday">Ср</div><div class="weekday">Чт</div><div class="weekday">Пт</div><div class="weekday">Сб</div><div class="weekday">Вс</div>
+
+                        <!-- April 2026: 1st is Wednesday, so 2 empty for Mon/Tue -->
+                        <div class="day-cell empty"></div><div class="day-cell empty"></div>
+                        <div class="day-cell"><span>1</span></div><div class="day-cell"><span>2</span></div><div class="day-cell"><span>3</span></div><div class="day-cell"><span>4</span></div><div class="day-cell"><span>5</span></div>
+                        <div class="day-cell"><span>6</span></div><div class="day-cell"><span>7</span></div><div class="day-cell"><span>8</span></div><div class="day-cell"><span>9</span></div><div class="day-cell active-mobile"><span>10</span></div><div class="day-cell"><span>11</span></div><div class="day-cell"><span>12</span></div>
+                        <div class="day-cell"><span>13</span></div><div class="day-cell"><span>14</span></div><div class="day-cell"><span>15</span></div><div class="day-cell"><span>16</span></div><div class="day-cell"><span>17</span></div><div class="day-cell"><span>18</span></div><div class="day-cell"><span>19</span></div>
+                        <div class="day-cell"><span>20</span></div><div class="day-cell"><span>21</span></div><div class="day-cell"><span>22</span></div><div class="day-cell"><span>23</span></div><div class="day-cell"><span>24</span></div><div class="day-cell"><span>25</span></div><div class="day-cell"><span>26</span></div>
+                        <div class="day-cell"><span>27</span></div><div class="day-cell"><span>28</span></div><div class="day-cell"><span>29</span></div><div class="day-cell"><span>30</span></div>
+                    </div>
+                </div>
+
+                <div class="mobile-details">
+                    <div class="shift-card">
+                        <h2 id="shift-title">День: —</h2>
+                        <div class="role-text" id="shift-role">—</div>
+                        <div class="time-text" id="shift-time">—</div>
+                        <div class="loc-text" id="shift-loc">—</div>
+                        <div class="workload-summary" id="workload-summary" style="display:none;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section" id="team">
+                <div class="placeholder-card">
+                    <h2>Команда</h2>
+                    <p>Запросы на изменения (для менеджера).</p>
+                    <div class="workload-list" id="requests-list"></div>
+                </div>
+            </section>
+            <section class="content-section" id="settings">
+                <div class="placeholder-card"><h2>Настройки</h2><p>Управление профилем.</p></div>
+            </section>
+            <section class="content-section" id="rating">
+                <div class="placeholder-card">
+                    <h2>Рейтинг сотрудников</h2>
+                    <p>Топ по эффективности и нагрузке.</p>
+                    <div class="rating-list" id="rating-list"></div>
+                </div>
+            </section>
+
+            <section class="content-section" id="admin" style="display:none;">
+                <div class="placeholder-card">
+                    <h2>Админ</h2>
+                    <p>Настройка загруженности по дням недели.</p>
+                    <div class="admin-actions">
+                        <button class="btn-sub" id="btn-workload-open">Настроить загруженность</button>
+                    </div>
+                    <div class="workload-list" id="workload-list"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Модалка смены -->
+    <div class="modal-overlay" id="modal-shift">
+        <div class="modal-card">
+            <button class="modal-close" id="close-modal">×</button>
+            <h2 id="modal-date-text">Смена</h2>
+            <div class="modal-info" id="modal-info"></div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-need-sub">Нужна подмена</button>
+                <button class="btn-primary" id="btn-confirm-shift">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Чат: подмена -->
+    <div class="chat-overlay" id="chat-bot">
+        <div class="chat-window">
+            <div class="chat-header">
+                <span class="chat-title">Поиск подмены</span>
+                <button id="close-chat" class="chat-close-btn">×</button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="msg bot">Привет! Напиши причину подмены.</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="user-input" placeholder="Сообщение..."><button id="send-btn">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка: загруженность -->
+    <div class="modal-overlay" id="workload-modal">
+        <div class="modal-window">
+            <div class="modal-header">
+                <span>Загруженность</span>
+                <button class="modal-close" id="workload-close">×</button>
+            </div>
+            <form class="modal-body" id="workload-form">
+                <div class="modal-grid">
+                    <div class="input-group">
+                        <label>Дата</label>
+                        <input type="date" id="workload-date" required />
+                    </div>
+                    <div class="input-group">
+                        <label>Начало</label>
+                        <input type="time" id="workload-start" required />
+                    </div>
+                    <div class="input-group">
+                        <label>Конец</label>
+                        <input type="time" id="workload-end" required />
+                    </div>
+                    <div class="input-group">
+                        <label>Сколько человек нужно</label>
+                        <input type="number" id="workload-count" min="1" step="1" placeholder="Например, 3" required />
+                    </div>
+                </div>
+                <div class="modal-error" id="workload-error"></div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-confirm">Сохранить</button>
+                    <button type="button" class="btn-sub" id="workload-cancel">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- AI Assistant -->
+    <div class="chat-overlay" id="ai-assistant-modal">
+        <div class="chat-window">
+            <div class="chat-header">
+                <span class="chat-title">Smart Assistant</span>
+                <button id="close-ai-chat" class="chat-close-btn">×</button>
+            </div>
+            <div class="chat-messages" id="ai-messages">
+                <div class="msg bot">Привет! Я твой AI ассистент. Чем могу помочь?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="ai-input" placeholder="Спросите что-нибудь..."><button id="ai-send-btn">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.SMARTSHEET_API_BASE || '';
+        const weekdayNames = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+        const fullWeekdayNames = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+
+        const state = {
+            year: 2026,
+            month: 3, // April
+            selectedDay: 10,
+            role: 'employee',
+            userName: 'Пользователь',
+            shifts: [],
+            workloads: [],
+        };
+
+        function normalizeRole(role) {
+            if (role === 'head') return 'manager';
+            if (role === 'admin') return 'admin';
+            return 'employee';
+        }
+
+        function initials(name) {
+            const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+            const a = (parts[0] || '?')[0] || '?';
+            const b = (parts[1] || '')[0] || '';
+            return (a + b).toUpperCase();
+        }
+
+        async function refreshAccessToken() {
+            const refresh = localStorage.getItem('smartsheet.refresh');
+            if (!refresh) return null;
+            const res = await fetch(`${API_BASE}/api/token/refresh/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refresh })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.access) return null;
+            localStorage.setItem('smartsheet.access', data.access);
+            return data.access;
+        }
+
+        async function apiFetch(path, options = {}) {
+            const access = localStorage.getItem('smartsheet.access');
+            const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
+            if (access) headers['Authorization'] = `Bearer ${access}`;
+
+            let res = await fetch(`${API_BASE}${path}`, Object.assign({}, options, { headers }));
+            if (res.status === 401) {
+                const nextAccess = await refreshAccessToken();
+                if (nextAccess) {
+                    headers['Authorization'] = `Bearer ${nextAccess}`;
+                    res = await fetch(`${API_BASE}${path}`, Object.assign({}, options, { headers }));
+                }
+            }
+            return res;
+        }
+
+        function weekdayIndexFromDate(dateObj) {
+            return (dateObj.getDay() + 6) % 7; // JS 0=Sun -> 6, 1=Mon -> 0
+        }
+
+        function currentWeekdayIndex() {
+            return weekdayIndexFromDate(new Date(state.year, state.month, state.selectedDay));
+        }
+
+        function setUserUI() {
+            document.getElementById('mobile-welcome').textContent = `Привет, ${state.userName}!`;
+            document.getElementById('user-name-desktop').textContent = `Привет, ${state.userName}!`;
+            document.getElementById('user-avatar').textContent = initials(state.userName);
+        }
+
+        function bindNavigation() {
+            const sections = document.querySelectorAll('.content-section');
+            document.querySelectorAll('.menu-link').forEach(link => {
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    const target = link.getAttribute('data-target');
+                    if (!target) return;
+                    document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    sections.forEach(s => s.classList.remove('active'));
+                    document.getElementById(target).classList.add('active');
+                    document.getElementById('main-title').textContent = link.textContent;
+                    if (window.innerWidth <= 768) toggleMenu(false);
+                };
+            });
+        }
+
+        function toggleMenu(force) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const burger = document.getElementById('burger-btn');
+            const next = typeof force === 'boolean' ? force : !sidebar.classList.contains('show');
+            sidebar.classList.toggle('show', next);
+            overlay.classList.toggle('show', next);
+            burger.classList.toggle('hidden-burger', next);
+        }
+
+        function getDayFromCell(cell) {
+            const span = cell.querySelector('span');
+            if (!span) return null;
+            const n = Number(span.textContent);
+            return Number.isFinite(n) ? n : null;
+        }
+
+        function getDateIso(day) {
+            const mm = String(state.month + 1).padStart(2, '0');
+            const dd = String(day).padStart(2, '0');
+            return `${state.year}-${mm}-${dd}`;
+        }
+
+        function renderWorkloadSummary() {
+            const el = document.getElementById('workload-summary');
+            if (state.role !== 'manager') {
+                el.style.display = 'none';
+                el.textContent = '';
+                return;
+            }
+
+            const iso = getDateIso(state.selectedDay);
+            const items = state.workloads
+                .filter(x => x.date === iso)
+                .sort((a, b) => (a.start_time || '').localeCompare(b.start_time || ''));
+
+            el.style.display = 'block';
+            if (!items.length) {
+                el.textContent = 'Нагрузка не настроена';
+                return;
+            }
+
+            el.innerHTML = `
+                <div class="workload-title">Нужно сотрудников:</div>
+                <div class="workload-items">
+                  ${items.map(x => `<div class="workload-item">${(x.start_time || '').slice(0,5)}–${(x.end_time || '').slice(0,5)}: <b>${x.required}</b></div>`).join('')}
+                </div>
+            `;
+        }
+
+        function renderWorkloadList() {
+            const listEl = document.getElementById('workload-list');
+            if (state.role !== 'admin') return;
+            const list = state.workloads
+                .slice()
+                .sort((a, b) => (a.date || '').localeCompare(b.date || '') || (a.start_time || '').localeCompare(b.start_time || ''));
+            if (!list.length) {
+                listEl.innerHTML = '<div class="workload-empty">Пока нет настроек.</div>';
+                return;
+            }
+
+            listEl.innerHTML = list.map(x => `
+                <div class="workload-row">
+                  <div class="workload-row-main">
+                    <div class="workload-row-title">${(x.date || '')} ${(x.start_time||'').slice(0,5)}–${(x.end_time||'').slice(0,5)}</div>
+                    <div class="workload-row-sub">Нужно: <b>${x.required}</b></div>
+                  </div>
+                  <button class="workload-del" data-id="${x.id}" title="Удалить">×</button>
+                </div>
+            `).join('');
+
+            listEl.querySelectorAll('.workload-del').forEach(btn => {
+                btn.onclick = async () => {
+                    const id = btn.getAttribute('data-id');
+                    if (!id) return;
+                    await apiFetch(`/api/schedule/workloads/${id}/`, { method: 'DELETE' });
+                    await loadWorkloads();
+                    renderWorkloadList();
+                    renderCalendarBadges();
+                    renderWorkloadSummary();
+                };
+            });
+        }
+
+        function renderCalendarBadges() {
+            const dayCells = Array.from(document.querySelectorAll('#calendar-grid .day-cell'))
+                .filter(c => !c.classList.contains('empty'));
+
+            dayCells.forEach(cell => {
+                cell.classList.remove('work-day', 'confirmed', 'on-wait');
+                const badge = cell.querySelector('.workload-badge');
+                if (badge) badge.remove();
+                const tag = cell.querySelector('.shift-tag');
+                if (tag) tag.remove();
+            });
+
+            // Workload badges (sum by weekday)
+            dayCells.forEach(cell => {
+                const day = getDayFromCell(cell);
+                if (!day) return;
+                const iso = getDateIso(day);
+                const sum = state.workloads
+                    .filter(x => x.date === iso)
+                    .reduce((acc, x) => acc + Number(x.required || 0), 0);
+                if (!sum) return;
+
+                const badge = document.createElement('div');
+                badge.className = 'workload-badge';
+                badge.textContent = String(sum);
+                cell.appendChild(badge);
+            });
+
+            // Shift tags (only for current user's shifts)
+            const myShiftsByDate = new Map();
+            state.shifts.forEach(s => {
+                if (!myShiftsByDate.has(s.date)) myShiftsByDate.set(s.date, []);
+                myShiftsByDate.get(s.date).push(s);
+            });
+
+            dayCells.forEach(cell => {
+                const day = getDayFromCell(cell);
+                if (!day) return;
+                const iso = getDateIso(day);
+                const list = myShiftsByDate.get(iso) || [];
+                if (!list.length) return;
+
+                const main = list[0];
+                cell.classList.add('work-day');
+                if (main.status === 'confirmed') cell.classList.add('confirmed');
+
+                const tag = document.createElement('span');
+                tag.className = 'shift-tag';
+                tag.textContent = main.status === 'confirmed' ? 'ПРИНЯТО' : 'СМЕНА';
+                cell.appendChild(tag);
+
+                if (state.role === 'manager' || state.role === 'admin') {
+                    const names = Array.from(new Set(list.map(x => (x.employee_username || '').trim()).filter(Boolean)));
+                    if (names.length) {
+                        const extra = document.createElement('div');
+                        extra.className = 'assigned-names';
+                        extra.textContent = names.slice(0, 2).join(', ') + (names.length > 2 ? ` +${names.length - 2}` : '');
+                        cell.appendChild(extra);
+                    }
+                }
+            });
+        }
+
+        function updateSelectedDayUI() {
+            const w = currentWeekdayIndex();
+            document.getElementById('shift-title').textContent = `День: ${weekdayNames[w]} (${state.selectedDay})`;
+
+            const iso = getDateIso(state.selectedDay);
+            const shifts = state.shifts.filter(s => s.date === iso).sort((a, b) => (a.start_time || '').localeCompare(b.start_time || ''));
+            if (!shifts.length) {
+                document.getElementById('shift-role').textContent = 'Нет смены';
+                document.getElementById('shift-time').textContent = '—';
+                document.getElementById('shift-loc').textContent = '—';
+            } else {
+                const people = Array.from(new Set(shifts.map(x => (x.employee_username || '').trim()).filter(Boolean)));
+                const s = shifts[0];
+                document.getElementById('shift-role').textContent = people.length ? `Сотрудники: ${people.slice(0,3).join(', ')}${people.length>3 ? '…' : ''}` : `Статус: ${s.status}`;
+                document.getElementById('shift-time').textContent = `${(s.start_time||'').slice(0,5)} — ${(s.end_time||'').slice(0,5)} (${shifts.length} смен)`;
+                document.getElementById('shift-loc').textContent = '—';
+            }
+
+            renderWorkloadSummary();
+        }
+
+        function bindCalendarClicks() {
+            const modal = document.getElementById('modal-shift');
+            const closeModal = document.getElementById('close-modal');
+            const modalDateText = document.getElementById('modal-date-text');
+            const modalInfo = document.getElementById('modal-info');
+            const btnNeedSub = document.getElementById('btn-need-sub');
+            const btnConfirmShift = document.getElementById('btn-confirm-shift');
+
+            const dayCells = Array.from(document.querySelectorAll('#calendar-grid .day-cell'))
+                .filter(c => !c.classList.contains('empty'));
+
+            dayCells.forEach(cell => {
+                cell.onclick = () => {
+                    const day = getDayFromCell(cell);
+                    if (!day) return;
+                    state.selectedDay = day;
+                    document.querySelectorAll('#calendar-grid .day-cell').forEach(c => c.classList.remove('active-mobile'));
+                    cell.classList.add('active-mobile');
+                    updateSelectedDayUI();
+
+                    const iso = getDateIso(day);
+                    const shifts = state.shifts.filter(s => s.date === iso).sort((a, b) => (a.start_time || '').localeCompare(b.start_time || ''));
+                    modalDateText.textContent = `Смена: ${day} апреля`;
+                    if (!shifts.length) {
+                        modalInfo.innerHTML = '<p>На этот день смен нет.</p>';
+                        btnConfirmShift.style.display = 'none';
+                        btnNeedSub.style.display = 'none';
+                    } else {
+                        modalInfo.innerHTML = shifts.map(s => `<p><strong>${(s.start_time||'').slice(0,5)}–${(s.end_time||'').slice(0,5)}</strong> • статус: ${s.status}</p>`).join('');
+                        btnNeedSub.style.display = '';
+                        btnConfirmShift.style.display = state.role === 'manager' ? '' : 'none';
+                    }
+                    modal.classList.add('show');
+                };
+            });
+
+            closeModal.onclick = () => modal.classList.remove('show');
+            modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('show'); };
+
+            btnNeedSub.onclick = () => {
+                modal.classList.remove('show');
+                document.getElementById('chat-bot').classList.add('show');
+            };
+
+            btnConfirmShift.onclick = async () => {
+                // Confirm first shift of selected day (manager only)
+                const iso = getDateIso(state.selectedDay);
+                const shifts = state.shifts.filter(s => s.date === iso).sort((a, b) => (a.start_time || '').localeCompare(b.start_time || ''));
+                if (!shifts.length) return;
+                const id = shifts[0].id;
+                await apiFetch(`/api/schedule/shifts/${id}/`, { method: 'PUT', body: JSON.stringify({ status: 'confirmed' }) });
+                await loadShifts();
+                renderCalendarBadges();
+                updateSelectedDayUI();
+                modal.classList.remove('show');
+            };
+        }
+
+        function bindWorkloadModal() {
+            const btnOpen = document.getElementById('btn-workload-open');
+            const modal = document.getElementById('workload-modal');
+            const close = document.getElementById('workload-close');
+            const cancel = document.getElementById('workload-cancel');
+            const form = document.getElementById('workload-form');
+            const err = document.getElementById('workload-error');
+
+            function open() {
+                err.textContent = '';
+                err.style.display = 'none';
+                modal.classList.add('show');
+            }
+            function hide() { modal.classList.remove('show'); }
+
+            const roleActionBtn = document.getElementById('role-action-btn');
+            roleActionBtn.onclick = () => {
+                if (state.role === 'admin') open();
+                else if (state.role === 'manager') optimizeSchedule();
+                else document.getElementById('chat-bot').classList.add('show');
+            };
+
+            if (btnOpen) btnOpen.onclick = open;
+            close.onclick = hide;
+            cancel.onclick = hide;
+            modal.onclick = (e) => { if (e.target === modal) hide(); };
+
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                const date = document.getElementById('workload-date').value;
+                const start_time = document.getElementById('workload-start').value;
+                const end_time = document.getElementById('workload-end').value;
+                const required = Number(document.getElementById('workload-count').value);
+
+                err.textContent = '';
+                err.style.display = 'none';
+                if (!start_time || !end_time || start_time >= end_time) {
+                    err.textContent = 'Проверь время (начало должно быть раньше конца).';
+                    err.style.display = 'block';
+                    return;
+                }
+                if (!Number.isFinite(required) || required < 1) {
+                    err.textContent = 'Укажи число людей (минимум 1).';
+                    err.style.display = 'block';
+                    return;
+                }
+
+                const res = await apiFetch('/api/schedule/workloads/daily/', {
+                    method: 'POST',
+                    body: JSON.stringify({ date, start_time, end_time, required })
+                });
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({}));
+                    err.textContent = data.error || 'Не удалось сохранить';
+                    err.style.display = 'block';
+                    return;
+                }
+
+                await loadWorkloads();
+                renderWorkloadList();
+                renderCalendarBadges();
+                renderWorkloadSummary();
+                hide();
+            };
+        }
+
+        function bindChat() {
+            const chatBot = document.getElementById('chat-bot');
+            document.getElementById('close-chat').onclick = () => chatBot.classList.remove('show');
+            chatBot.onclick = (e) => { if (e.target === chatBot) chatBot.classList.remove('show'); };
+
+            document.getElementById('send-btn').onclick = () => {
+                const input = document.getElementById('user-input');
+                const val = input.value.trim();
+                if(!val) return;
+                const m = document.createElement('div'); m.className='msg user'; m.textContent=val;
+                document.getElementById('chat-messages').appendChild(m);
+                input.value='';
+                (async () => {
+                    const iso = getDateIso(state.selectedDay);
+                    const res = await apiFetch('/api/schedule/change-requests/', {
+                        method: 'POST',
+                        body: JSON.stringify({ date: iso, message: val })
+                    });
+                    const ok = res.ok;
+                    const b = document.createElement('div'); b.className='msg bot';
+                    b.textContent = ok ? 'Запрос отправлен менеджеру.' : 'Не удалось отправить запрос.';
+                    document.getElementById('chat-messages').appendChild(b);
+                })();
+            };
+        }
+
+        function bindAi() {
+            const aiModal = document.getElementById('ai-assistant-modal');
+            const openAiBtn = document.getElementById('open-ai-btn');
+            const openAiMobile = document.getElementById('open-ai-mobile');
+            const close = document.getElementById('close-ai-chat');
+            const messages = document.getElementById('ai-messages');
+
+            function open() { aiModal.classList.add('show'); }
+            function hide() { aiModal.classList.remove('show'); }
+
+            openAiBtn.onclick = open;
+            openAiMobile.onclick = (e) => { e.preventDefault(); open(); };
+            close.onclick = hide;
+            aiModal.onclick = (e) => { if (e.target === aiModal) hide(); };
+
+            document.getElementById('ai-send-btn').onclick = async () => {
+                const input = document.getElementById('ai-input');
+                const val = input.value.trim();
+                if(!val) return;
+                const u = document.createElement('div'); u.className = 'msg user'; u.textContent = val;
+                messages.appendChild(u);
+                input.value = '';
+                setTimeout(() => {
+                    const b = document.createElement('div'); b.className = 'msg bot';
+                    b.textContent = 'AI-ответ (демо): я передал запрос менеджеру/учёл пожелания. В реальной версии подключим модель.';
+                    messages.appendChild(b);
+                    messages.scrollTop = messages.scrollHeight;
+                }, 600);
+            };
+        }
+
+        async function loadMe() {
+            const access = localStorage.getItem('smartsheet.access');
+            if (!access) {
+                window.location.href = 'author.html';
+                return;
+            }
+            const res = await apiFetch('/api/users/me/', { method: 'GET' });
+            if (!res.ok) {
+                window.location.href = 'author.html';
+                return;
+            }
+            const user = await res.json();
+            state.role = normalizeRole(user.role);
+            state.userName = user.first_name || user.username || 'Пользователь';
+            localStorage.setItem('smartsheet.role', state.role);
+            localStorage.setItem('smartsheet.user', state.userName);
+            setUserUI();
+
+            if (state.role === 'admin') {
+                document.getElementById('role-action-btn').textContent = 'Настроить нагрузку';
+                const adminSection = document.getElementById('admin');
+                adminSection.style.display = '';
+
+                // add nav item if missing
+                if (!document.querySelector('[data-target=\"admin\"]')) {
+                    const link = document.createElement('a');
+                    link.href = '#';
+                    link.className = 'menu-link';
+                    link.setAttribute('data-target', 'admin');
+                    link.textContent = 'Админ';
+                    document.getElementById('menu').appendChild(link);
+                }
+            }
+
+            if (state.role === 'manager') {
+                document.getElementById('role-action-btn').textContent = 'Оптимизировать';
+
+                const teamLink = document.querySelector('[data-target="team"]');
+                if (teamLink && !document.getElementById('notify-badge')) {
+                    const badge = document.createElement('span');
+                    badge.id = 'notify-badge';
+                    badge.className = 'notify-badge';
+                    badge.textContent = '0';
+                    teamLink.appendChild(badge);
+                }
+            }
+
+            if (state.role === 'employee') {
+                document.getElementById('role-action-btn').textContent = 'Нужна подмена';
+            }
+        }
+
+        async function loadRatings() {
+            const res = await apiFetch('/api/users/ratings/', { method: 'GET' });
+            const listEl = document.getElementById('rating-list');
+            if (!listEl) return;
+            if (!res.ok) {
+                listEl.innerHTML = '<div class="workload-empty">Не удалось загрузить рейтинг.</div>';
+                return;
+            }
+            const data = await res.json();
+            if (!data.length) {
+                listEl.innerHTML = '<div class="workload-empty">Пока нет данных.</div>';
+                return;
+            }
+            listEl.innerHTML = data.map((u, idx) => `
+                <div class="rating-row">
+                  <div class="rating-left">
+                    <div class="rating-rank">${idx + 1}</div>
+                    <div class="rating-name">${u.full_name || u.username}</div>
+                  </div>
+                  <div class="rating-score">${u.rating}</div>
+                </div>
+            `).join('');
+        }
+
+        async function loadChangeRequestsCount() {
+            if (state.role !== 'manager') return;
+            const res = await apiFetch('/api/schedule/change-requests/?status=open', { method: 'GET' });
+            if (!res.ok) return;
+            const list = await res.json();
+            const count = Array.isArray(list) ? list.length : 0;
+            const badge = document.getElementById('notify-badge');
+            if (!badge) return;
+            badge.textContent = String(count);
+            badge.style.display = count ? 'inline-flex' : 'none';
+        }
+
+        async function loadChangeRequestsList() {
+            const listEl = document.getElementById('requests-list');
+            if (!listEl) return;
+            if (state.role !== 'manager') {
+                listEl.innerHTML = '<div class="workload-empty">Доступно менеджеру.</div>';
+                return;
+            }
+            const res = await apiFetch('/api/schedule/change-requests/?status=open', { method: 'GET' });
+            if (!res.ok) {
+                listEl.innerHTML = '<div class="workload-empty">Не удалось загрузить запросы.</div>';
+                return;
+            }
+            const list = await res.json();
+            if (!Array.isArray(list) || !list.length) {
+                listEl.innerHTML = '<div class="workload-empty">Новых запросов нет.</div>';
+                return;
+            }
+            listEl.innerHTML = list.map(x => `
+                <div class="workload-row">
+                  <div class="workload-row-main">
+                    <div class="workload-row-title">${x.employee_username || ''} • ${(x.date || 'без даты')}</div>
+                    <div class="workload-row-sub">${(x.message || '').replace(/</g,'&lt;')}</div>
+                  </div>
+                  <button class="workload-del" data-id="${x.id}" data-act="approve" title="Одобрить">✓</button>
+                </div>
+            `).join('');
+
+            listEl.querySelectorAll('button[data-act=\"approve\"]').forEach(btn => {
+                btn.onclick = async () => {
+                    const id = btn.getAttribute('data-id');
+                    await apiFetch(`/api/schedule/change-requests/${id}/`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ status: 'approved' })
+                    });
+                    await loadChangeRequestsList();
+                    await loadChangeRequestsCount();
+                };
+            });
+        }
+
+        async function loadShifts() {
+            const from = `${state.year}-${String(state.month + 1).padStart(2,'0')}-01`;
+            const to = `${state.year}-${String(state.month + 1).padStart(2,'0')}-30`;
+            const res = await apiFetch(`/api/schedule/shifts/?from=${from}&to=${to}`, { method: 'GET' });
+            state.shifts = res.ok ? await res.json() : [];
+        }
+
+        async function loadWorkloads() {
+            const from = `${state.year}-${String(state.month + 1).padStart(2,'0')}-01`;
+            const to = `${state.year}-${String(state.month + 1).padStart(2,'0')}-30`;
+            const res = await apiFetch(`/api/schedule/workloads/daily/?from=${from}&to=${to}`, { method: 'GET' });
+            state.workloads = res.ok ? await res.json() : [];
+        }
+
+        async function optimizeSchedule() {
+            const from = `${state.year}-${String(state.month + 1).padStart(2,'0')}-01`;
+            const to = `${state.year}-${String(state.month + 1).padStart(2,'0')}-30`;
+            const btn = document.getElementById('role-action-btn');
+            const prev = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Оптимизация...';
+            const res = await apiFetch('/api/schedule/optimize/', { method: 'POST', body: JSON.stringify({ from, to }) });
+            btn.disabled = false;
+            btn.textContent = prev;
+            if (!res.ok) return;
+            await loadShifts();
+            renderCalendarBadges();
+            updateSelectedDayUI();
+        }
+
+        async function bootstrap() {
+            // burger
+            document.getElementById('burger-btn').onclick = () => toggleMenu();
+            document.getElementById('overlay').onclick = () => toggleMenu(false);
+
+            bindNavigation();
+            bindCalendarClicks();
+            bindWorkloadModal();
+            bindChat();
+            bindAi();
+
+            await loadMe();
+            await loadWorkloads();
+            await loadShifts();
+            await loadRatings();
+            await loadChangeRequestsCount();
+            await loadChangeRequestsList();
+
+            renderWorkloadList();
+            renderCalendarBadges();
+            updateSelectedDayUI();
+
+            // polling for manager notifications
+            if (state.role === 'manager') {
+                setInterval(loadChangeRequestsCount, 10000);
+                setInterval(loadChangeRequestsList, 15000);
+            }
+        }
+
+        bootstrap();
+    </script>
+</body>
+</html>

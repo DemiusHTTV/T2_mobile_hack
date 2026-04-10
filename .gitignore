@@ -1,0 +1,13 @@
+*.pyc
+__pycache__/
+
+# macOS
+.DS_Store
+
+# Django
+db.sqlite3
+staticfiles/
+
+# Python virtual envs
+.venv/
+
