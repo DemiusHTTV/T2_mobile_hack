@@ -21,8 +21,14 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from . import views
+
 urlpatterns = [
+    path("", views.index, name="index"),
     path('admin/', admin.site.urls),
+    
+    # Django auth URLs (для login.html шаблонов)
+    path("accounts/", include("django.contrib.auth.urls")),
     
     # API Users
     path('api/users/', include('users.urls')),
@@ -30,4 +36,10 @@ urlpatterns = [
     # JWT Token endpoints
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # Schedule API
+    path("api/schedule/", include("schedule.urls")),
+    
+    # AI API
+    path("api/ai/", include("ai.urls")),
 ]

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Вход</title>
+  </head>
+  <body>
+    <h1>Вход</h1>
+
+    {% if form.errors %}
+      <p style="color: #b00020;">Неверный логин или пароль.</p>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <p>
+        <label for="id_username">Логин</label><br />
+        <input id="id_username" name="username" type="text" autocomplete="username" required />
+      </p>
+      <p>
+        <label for="id_password">Пароль</label><br />
+        <input id="id_password" name="password" type="password" autocomplete="current-password" required />
+      </p>
+      <input type="hidden" name="next" value="{{ next|default:'/' }}" />
+      <button type="submit">Войти</button>
+    </form>
+  </body>
+</html>
