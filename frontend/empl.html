@@ -30,6 +30,12 @@
                     <span></span><span></span><span></span>
                 </div>
                 <h1 class="page-title" id="main-title">Апрель 2026</h1>
+
+                <div class="mobile-welcome" id="mobile-welcome">Привет!</div>
+                <div class="user-info">
+                    <span class="user-name-desktop" id="user-name-desktop">Привет!</span>
+                    <div class="user-avatar" id="user-avatar">??</div>
+
                 <div class="mobile-welcome">Привет, Дмитрий!</div>
                 
                 <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
@@ -38,6 +44,7 @@
                         <span class="user-name-desktop">Привет, Дмитрий!</span>
                         <div class="user-avatar">ДТ</div>
                     </div>
+
                 </div>
             </header>
 
@@ -45,9 +52,58 @@
                 <div class="calendar-wrapper">
                     <div class="calendar-grid" id="calendar-grid">
                         <div class="weekday">Пн</div><div class="weekday">Вт</div><div class="weekday">Ср</div><div class="weekday">Чт</div><div class="weekday">Пт</div><div class="weekday">Сб</div><div class="weekday">Вс</div>
+
+                        <div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div>
+                        <div class="day-cell"><span>1</span></div><div class="day-cell"><span>2</span></div><div class="day-cell"><span>3</span></div>
+                        <div class="day-cell"><span>4</span></div><div class="day-cell"><span>5</span></div><div class="day-cell"><span>6</span></div><div class="day-cell"><span>7</span></div>
+                        <div class="day-cell"><span>8</span></div><div class="day-cell"><span>9</span></div><div class="day-cell active-mobile"><span>10</span></div>
+                        <div class="day-cell"><span>11</span></div>
+                        <div class="day-cell work-day"><span>12</span><span class="shift-tag">СМЕНА</span></div>
+                        <div class="day-cell"><span>13</span></div>
+                        <div class="day-cell work-day"><span>14</span><span class="shift-tag">СМЕНА</span></div>
+                    </div>
+                </div>
+                <div class="mobile-details">
+                    <div class="shift-card">
+                        <h2 id="shift-title">Твоя смена</h2>
+                        <div class="role-text">Продавец</div>
+                        <div class="time-text">08:00 — 12:00</div>
+                        <div class="loc-text">ТЦ "Сильвер Молл"</div>
+                        <div class="workload-summary" id="workload-summary" style="display:none;"></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn-sub" id="btn-sub">Нужна подмена</button>
+                        <button class="btn-confirm" id="btn-confirm">Подтвердить смену</button>
+
                     </div>
                 </div>
             </section>
+
+
+            <section class="content-section" id="team">
+                <div class="placeholder-card"><h2>Команда</h2><p>Список сотрудников в сети.</p></div>
+            </section>
+            <section class="content-section" id="settings">
+                <div class="placeholder-card"><h2>Настройки</h2><p>Управление профилем.</p></div>
+            </section>
+            <section class="content-section" id="rating">
+                <div class="placeholder-card"><h2>Рейтинг</h2><p>Ваша позиция: 3 место.</p></div>
+            </section>
+
+            <section class="content-section" id="admin" style="display:none;">
+                <div class="placeholder-card">
+                    <h2>Админ</h2>
+                    <p>Настройка загруженности по дням недели.</p>
+                    <div class="admin-actions">
+                        <button class="btn-sub" id="btn-workload-open">Настроить загруженность</button>
+                    </div>
+                    <div class="workload-list" id="workload-list"></div>
+                </div>
+            </section>
+
+            <section class="content-section" id="team"><div class="placeholder-card"><h2>Команда</h2></div></section>
+            <section class="content-section" id="settings"><div class="placeholder-card"><h2>Настройки</h2></div></section>
+            <section class="content-section" id="rating"><div class="placeholder-card"><h2>Рейтинг</h2></div></section>
 
             <section class="content-section" id="team"><div class="placeholder-card"><h2>Команда</h2></div></section>
             <section class="content-section" id="settings"><div class="placeholder-card"><h2>Настройки</h2></div></section>
@@ -84,6 +140,47 @@
         </div>
     </div>
 
+
+    <div class="modal-overlay" id="workload-modal">
+        <div class="modal-window">
+            <div class="modal-header">
+                <span>Загруженность</span>
+                <button class="modal-close" id="workload-close">×</button>
+            </div>
+            <form class="modal-body" id="workload-form">
+                <div class="modal-grid">
+                    <div class="input-group">
+                        <label>День недели</label>
+                        <select id="workload-weekday" required>
+                            <option value="0">Понедельник</option>
+                            <option value="1">Вторник</option>
+                            <option value="2">Среда</option>
+                            <option value="3">Четверг</option>
+                            <option value="4">Пятница</option>
+                            <option value="5">Суббота</option>
+                            <option value="6">Воскресенье</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Начало</label>
+                        <input type="time" id="workload-start" required />
+                    </div>
+                    <div class="input-group">
+                        <label>Конец</label>
+                        <input type="time" id="workload-end" required />
+                    </div>
+                    <div class="input-group">
+                        <label>Сколько человек нужно</label>
+                        <input type="number" id="workload-count" min="1" step="1" placeholder="Например, 3" required />
+                    </div>
+                </div>
+                <div class="modal-error" id="workload-error"></div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-confirm">Сохранить</button>
+                    <button type="button" class="btn-sub" id="workload-cancel">Отмена</button>
+                </div>
+            </form>
+
     <div class="chat-overlay" id="ai-assistant-modal">
         <div class="chat-window">
             <div class="chat-header">
@@ -96,6 +193,7 @@
             <div class="chat-input-area">
                 <input type="text" id="ai-input" placeholder="Спросите что-нибудь..."><button id="ai-send-btn">➤</button>
             </div>
+
         </div>
     </div>
 
@@ -109,12 +207,28 @@
         const burger = document.getElementById('burger-btn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
+
+        const sections = document.querySelectorAll('.content-section');
+        const btnWorkloadOpen = document.getElementById('btn-workload-open');
+        const workloadModal = document.getElementById('workload-modal');
+        const workloadClose = document.getElementById('workload-close');
+        const workloadCancel = document.getElementById('workload-cancel');
+        const workloadForm = document.getElementById('workload-form');
+        const workloadError = document.getElementById('workload-error');
+        const workloadSummary = document.getElementById('workload-summary');
+        const workloadList = document.getElementById('workload-list');
+        const shiftTitle = document.getElementById('shift-title');
+
+        const closeChat = document.getElementById('close-chat');
+        let selectedDayCell = null;
+
         const closeChat = document.getElementById('close-chat');
         const closeAiChat = document.getElementById('close-ai-chat');
         const openAiBtn = document.getElementById('open-ai-btn');
         const openAiMobile = document.getElementById('open-ai-mobile');
         
         let selectedDayCell = null;
+
 
         // Календарь (31 день)
         for(let i=0; i<3; i++) grid.innerHTML += '<div class="day-cell empty"></div>';
@@ -159,6 +273,279 @@
         burger.onclick = toggleMenu;
         overlay.onclick = toggleMenu;
 
+<
+        function bindNavigation() {
+            document.querySelectorAll('.menu-link').forEach(link => {
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    const target = link.getAttribute('data-target');
+                    document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    sections.forEach(s => s.classList.remove('active'));
+                    document.getElementById(target).classList.add('active');
+                    document.getElementById('main-title').textContent = link.textContent;
+                    if(window.innerWidth <= 768) toggleMenu();
+                };
+            });
+        }
+
+        // Чат и кнопки
+        const chatBot = document.getElementById('chat-bot');
+        const btnSub = document.getElementById('btn-sub');
+        const role = (localStorage.getItem('smartsheet.role') || 'employee').toLowerCase();
+        const userName = localStorage.getItem('smartsheet.user') || 'Пользователь';
+
+        function initials(name) {
+            const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+            const a = (parts[0] || '?')[0] || '?';
+            const b = (parts[1] || '')[0] || '';
+            return (a + b).toUpperCase();
+        }
+
+        document.getElementById('mobile-welcome').textContent = `Привет, ${userName}!`;
+        document.getElementById('user-name-desktop').textContent = `Привет, ${userName}!`;
+        document.getElementById('user-avatar').textContent = initials(userName);
+
+        function loadWorkloads() {
+            try {
+                return JSON.parse(localStorage.getItem('smartsheet.workloads') || '[]');
+            } catch {
+                return [];
+            }
+        }
+
+        function saveWorkloads(list) {
+            localStorage.setItem('smartsheet.workloads', JSON.stringify(list));
+        }
+
+        const weekdayNames = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+        function weekdayIndexFromDate(dateObj) {
+            // JS: 0=Sunday...6=Saturday -> our: 0=Mon...6=Sun
+            return (dateObj.getDay() + 6) % 7;
+        }
+
+        const state = { year: 2026, month: 3, selectedDay: 10 }; // April 2026
+
+        function currentWeekdayIndex() {
+            return weekdayIndexFromDate(new Date(state.year, state.month, state.selectedDay));
+        }
+
+        function renderWorkloadSummary() {
+            const list = loadWorkloads();
+            const w = currentWeekdayIndex();
+            const items = list
+                .filter(x => Number(x.weekday) === Number(w))
+                .sort((a, b) => (a.start || '').localeCompare(b.start || ''));
+
+            if (role !== 'manager') {
+                workloadSummary.style.display = 'none';
+                workloadSummary.textContent = '';
+                return;
+            }
+
+            workloadSummary.style.display = 'block';
+            if (!items.length) {
+                workloadSummary.textContent = 'Нагрузка не настроена';
+                return;
+            }
+
+            workloadSummary.innerHTML = `
+                <div class="workload-title">Нужно сотрудников (${weekdayNames[w]}):</div>
+                <div class="workload-items">
+                  ${items.map(x => `<div class="workload-item">${x.start}–${x.end}: <b>${x.required}</b></div>`).join('')}
+                </div>
+            `;
+        }
+
+        function renderWorkloadList() {
+            if (role !== 'admin') return;
+            const list = loadWorkloads()
+                .slice()
+                .sort((a, b) => (Number(a.weekday) - Number(b.weekday)) || (a.start || '').localeCompare(b.start || ''));
+            if (!list.length) {
+                workloadList.innerHTML = '<div class="workload-empty">Пока нет настроек.</div>';
+                return;
+            }
+            workloadList.innerHTML = list.map((x, idx) => `
+                <div class="workload-row">
+                  <div class="workload-row-main">
+                    <div class="workload-row-title">${weekdayNames[Number(x.weekday)]} ${x.start}–${x.end}</div>
+                    <div class="workload-row-sub">Нужно: <b>${x.required}</b></div>
+                  </div>
+                  <button class="workload-del" data-idx="${idx}" title="Удалить">×</button>
+                </div>
+            `).join('');
+
+            workloadList.querySelectorAll('.workload-del').forEach(btn => {
+                btn.onclick = () => {
+                    const i = Number(btn.getAttribute('data-idx'));
+                    const next = loadWorkloads();
+                    next.splice(i, 1);
+                    saveWorkloads(next);
+                    renderWorkloadList();
+                    renderCalendarBadges();
+                };
+            });
+        }
+
+        function openWorkloadModal() {
+            workloadError.textContent = '';
+            workloadError.style.display = 'none';
+            workloadModal.classList.add('show');
+        }
+        function closeWorkloadModal() {
+            workloadModal.classList.remove('show');
+        }
+
+        btnSub.onclick = () => {
+            if (role === 'admin') {
+                openWorkloadModal();
+                return;
+            }
+            chatBot.classList.add('show');
+        };
+        document.getElementById('close-chat').onclick = () => chatBot.classList.remove('show');
+
+        document.getElementById('btn-confirm').onclick = function() {
+            this.textContent = '✓ Подтверждено';
+            this.classList.add('confirmed');
+        };
+
+        function renderCalendarBadges() {
+            const list = loadWorkloads();
+            const dayCells = Array.from(document.querySelectorAll('.day-cell'))
+                .filter(c => !c.classList.contains('empty'));
+
+            dayCells.forEach(cell => {
+                const badge = cell.querySelector('.workload-badge');
+                if (badge) badge.remove();
+            });
+
+            dayCells.forEach(cell => {
+                const dayText = cell.textContent.trim();
+                const day = Number(dayText);
+                if (!day) return;
+                const w = weekdayIndexFromDate(new Date(state.year, state.month, day));
+                const sum = list
+                    .filter(x => Number(x.weekday) === Number(w))
+                    .reduce((acc, x) => acc + Number(x.required || 0), 0);
+                if (!sum) return;
+
+                const badge = document.createElement('div');
+                badge.className = 'workload-badge';
+                badge.textContent = String(sum);
+                cell.appendChild(badge);
+            });
+        }
+
+        function bindDayClicks() {
+            const dayCells = Array.from(document.querySelectorAll('.day-cell'))
+                .filter(c => !c.classList.contains('empty'));
+            dayCells.forEach(cell => {
+                cell.onclick = () => {
+                    const day = Number(cell.textContent.trim());
+                    if (!day) return;
+                    state.selectedDay = day;
+
+                    document.querySelectorAll('.day-cell').forEach(c => c.classList.remove('active-mobile'));
+                    cell.classList.add('active-mobile');
+
+                    const w = currentWeekdayIndex();
+                    shiftTitle.textContent = `День: ${weekdayNames[w]} (${day})`;
+                    renderWorkloadSummary();
+                };
+            });
+        }
+
+        // Workload modal handlers
+        if (btnWorkloadOpen) btnWorkloadOpen.onclick = openWorkloadModal;
+        workloadClose.onclick = closeWorkloadModal;
+        workloadCancel.onclick = closeWorkloadModal;
+        workloadModal.onclick = (e) => { if (e.target === workloadModal) closeWorkloadModal(); };
+
+        workloadForm.onsubmit = (e) => {
+            e.preventDefault();
+            const weekday = Number(document.getElementById('workload-weekday').value);
+            const start = document.getElementById('workload-start').value;
+            const end = document.getElementById('workload-end').value;
+            const required = Number(document.getElementById('workload-count').value);
+
+            workloadError.textContent = '';
+            workloadError.style.display = 'none';
+
+            if (!start || !end || start >= end) {
+                workloadError.textContent = 'Проверь время (начало должно быть раньше конца).';
+                workloadError.style.display = 'block';
+                return;
+            }
+            if (!Number.isFinite(required) || required < 1) {
+                workloadError.textContent = 'Укажи число людей (минимум 1).';
+                workloadError.style.display = 'block';
+                return;
+            }
+
+            const list = loadWorkloads();
+            const key = `${weekday}|${start}|${end}`;
+            const existing = list.findIndex(x => `${x.weekday}|${x.start}|${x.end}` === key);
+            const item = { weekday, start, end, required };
+            if (existing >= 0) list[existing] = item;
+            else list.push(item);
+            saveWorkloads(list);
+
+            renderWorkloadList();
+            renderCalendarBadges();
+            renderWorkloadSummary();
+            closeWorkloadModal();
+        };
+
+        // Role-based UI
+        if (role === 'admin') {
+            btnSub.textContent = 'Настроить загруженность';
+            const adminLink = document.createElement('a');
+            adminLink.href = '#';
+            adminLink.className = 'menu-link';
+            adminLink.setAttribute('data-target', 'admin');
+            adminLink.textContent = 'Админ';
+            document.querySelector('.menu').appendChild(adminLink);
+            document.getElementById('admin').style.display = '';
+        }
+
+        if (role === 'manager') {
+            renderWorkloadSummary();
+        }
+
+        bindNavigation();
+        bindDayClicks();
+        renderWorkloadList();
+        renderCalendarBadges();
+
+        // Initial title + summary
+        const w0 = currentWeekdayIndex();
+        shiftTitle.textContent = `День: ${weekdayNames[w0]} (${state.selectedDay})`;
+        renderWorkloadSummary();
+
+        function sendMsg() {
+
+        // Навигация
+        document.querySelectorAll('.menu-link').forEach(link => {
+            link.onclick = (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                link.classList.add('active');
+                document.getElementById(link.getAttribute('data-target')).classList.add('active');
+                if(window.innerWidth <= 768) toggleMenu();
+            };
+        });
+
+        // Модалка и Чат
+        document.getElementById('close-modal').onclick = () => modal.classList.remove('show');
+        document.getElementById('btn-confirm-shift').onclick = () => {
+            selectedDayCell.className = 'day-cell work-day';
+            selectedDayCell.querySelector('.shift-tag').textContent = 'ПРИНЯТО';
+            modal.classList.remove('show');
+        };
+
         // Навигация
         document.querySelectorAll('.menu-link').forEach(link => {
             link.onclick = (e) => {
@@ -174,10 +561,19 @@
 
         // Закрытие
         document.getElementById('close-modal').onclick = () => modal.classList.remove('show');
+
+        document.getElementById('btn-confirm-shift').onclick = () => {
+            selectedDayCell.className = 'day-cell work-day';
+            selectedDayCell.querySelector('.shift-tag').textContent = 'ПРИНЯТО';
+            modal.classList.remove('show');
+        };
+
+
         closeChat.onclick = () => chatBot.classList.remove('show');
         closeAiChat.onclick = () => aiModal.classList.remove('show');
 
         // Открытие чатов
+
         document.getElementById('btn-need-sub').onclick = () => {
             modal.classList.remove('show');
             chatBot.classList.add('show');
@@ -191,6 +587,7 @@
 
         // Чат подмены
         document.getElementById('send-btn').onclick = function() {
+
             const val = document.getElementById('user-input').value.trim();
             if(!val) return;
             const uM = document.createElement('div'); uM.className = 'msg user'; uM.textContent = val;
