@@ -16,6 +16,12 @@ Including another URLconf
 """
 
 from django.urls import include, path
+from django.contrib import admin
+from django.urls import path, include
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 from . import views
 
@@ -23,7 +29,8 @@ urlpatterns = [
     path("", views.index, name="index"),
     path('admin/', admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
-
+    # Django auth URLs (для login.html шаблонов)
+    path("accounts/", include("django.contrib.auth.urls")),
     
     # API Users
     path('api/users/', include('users.urls')),

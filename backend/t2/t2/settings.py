@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,15 +31,17 @@ SECRET_KEY = 'django-insecure-xo+!33(431lyvoay@h%lqh7(7hw0$oqvq-pv-p^6+ktm)yzkf3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "1") == "1"
 
-<<<<<<< HEAD
 
 ALLOWED_HOSTS = []
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
-=======
 ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,testserver").split(",") if h.strip()]
->>>>>>> 7670fc6 (feat:Added connection backend with frontend closes #1)
+SECRET_KEY = 'django-insecure-xo+!33(431lyvoay@h%lqh7(7hw0$oqvq-pv-p^6+ktm)yzkf3'
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv("DEBUG", "1") == "1"
+
+ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,testserver").split(",") if h.strip()]
 
 
 # Application definition
@@ -61,6 +64,14 @@ INSTALLED_APPS = [
 
     'schedule',
 
+    # Third party
+    'rest_framework',
+    'rest_framework_simplejwt',
+
+    # Local apps
+    'users',
+    'schedule',
+    'ai',
 ]
 
 MIDDLEWARE = [
@@ -69,7 +80,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
 
     'django.middleware.locale.LocaleMiddleware',
-
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -86,7 +97,7 @@ TEMPLATES = [
         'DIRS': [],
 
         'DIRS': [BASE_DIR / 'templates'],
-
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -138,10 +149,10 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 
+=======
 LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'Asia/Irkutsk'
-
 
 USE_I18N = True
 
@@ -153,7 +164,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
@@ -174,8 +184,6 @@ REST_FRAMEWORK = {
 }
 
 # JWT Settings
-from datetime import timedelta
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
@@ -190,11 +198,13 @@ USE_TZ = True
 
 LOGIN_URL = "/accounts/login/"
 
-<<<<<<< HEAD
-=======
+
+# Login URL
+LOGIN_URL = "/accounts/login/"
+
 # Yandex AI Settings
 # Получите API ключ на https://cloud.yandex.ru/
 YANDEX_AI_API_KEY = os.getenv("YANDEX_AI_API_KEY", "")
 YANDEX_AI_PROJECT_ID = os.getenv("YANDEX_AI_PROJECT_ID", "b1gsdtq8rcvr9irn0bp9")
 YANDEX_AI_PROMPT_ID = os.getenv("YANDEX_AI_PROMPT_ID", "fvt36i3obvunn1od9ao3")
->>>>>>> 7670fc6 (feat:Added connection backend with frontend closes #1)
+
