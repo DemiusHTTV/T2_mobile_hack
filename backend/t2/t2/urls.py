@@ -39,7 +39,4 @@ urlpatterns = [
     
     # Schedule API
     path("api/schedule/", include("schedule.urls")),
-    
-    # AI API
-    path("api/ai/", include("ai.urls")),
 ]

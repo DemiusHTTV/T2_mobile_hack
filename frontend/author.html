@@ -72,25 +72,24 @@
             document.getElementById('error-msg').style.display = 'none';
         }
 
-        // Заглушка для API (демо)
-        // Тестовые доступы:
-        // - admin / admin12345 (роль: Администратор)
-        async function fakeApiCall(username, password, role) {
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    if (!username || !password || !role) {
-                        reject('Ошибка авторизации');
-                        return;
-                    }
-                    if (role === 'admin') {
-                        if (!(username === 'admin' && password === 'admin12345')) {
-                            reject('Ошибка авторизации');
-                            return;
-                        }
-                    }
-                    resolve({ token: 'fake-jwt-token', user: { name: username, role: role } });
-                }, 500);
+        const API_BASE = window.SMARTSHEET_API_BASE || '';
+
+        function normalizeRole(role) {
+            if (role === 'head') return 'manager';
+            if (role === 'employee') return 'employee';
+            if (role === 'admin') return 'admin';
+            return role;
+        }
+
+        async function loginApi(username, password) {
+            const res = await fetch(`${API_BASE}/api/users/login/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
             });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'Ошибка авторизации');
+            return data;
         }
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
@@ -103,17 +102,23 @@
             error.style.display = 'none';
 
             try {
-                const res = await fakeApiCall(
-                    document.getElementById('username').value,
-                    document.getElementById('password').value,
-                    selectedRole
-                );
-                console.log('Успех:', res);
-                localStorage.setItem('smartsheet.role', res.user.role);
-                localStorage.setItem('smartsheet.user', res.user.name);
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const res = await loginApi(username, password);
+
+                const backendRole = normalizeRole(res.user?.role);
+                if (!selectedRole || backendRole !== selectedRole) {
+                    throw new Error('Роль не совпадает с выбранной');
+                }
+
+                localStorage.setItem('smartsheet.access', res.access);
+                localStorage.setItem('smartsheet.refresh', res.refresh);
+                localStorage.setItem('smartsheet.role', backendRole);
+                localStorage.setItem('smartsheet.user', res.user?.first_name || res.user?.username || username);
                 // Перенаправление на рабочую область
                 window.location.href = 'empl.html';
             } catch (err) {
+                error.textContent = err && err.message ? err.message : 'Неверный логин или пароль';
                 error.style.display = 'block';
                 btn.disabled = false;
                 btn.textContent = 'Войти';

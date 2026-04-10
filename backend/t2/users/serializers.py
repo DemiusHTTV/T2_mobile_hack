@@ -36,6 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'username', 'email', 'first_name', 'last_name',
             'role', 'role_display', 'department', 'department_name',
             'organization', 'organization_name', 'phone',
+            'rating',
             'is_active', 'date_joined', 'last_login'
         ]
         read_only_fields = ['date_joined', 'last_login', 'is_active']
@@ -50,7 +51,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         fields = [
             'username', 'email', 'password', 'password_confirm',
             'first_name', 'last_name', 'role', 'department',
-            'organization', 'phone'
+            'organization', 'phone', 'rating'
         ]
         extra_kwargs = {
             'password': {'write_only': True},
@@ -108,3 +109,15 @@ class ChangePasswordSerializer(serializers.Serializer):
         if data['new_password'] != data['new_password_confirm']:
             raise serializers.ValidationError("Новые пароли не совпадают")
         return data
+
+
+class RatingUserSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "first_name", "last_name", "full_name", "rating"]
+
+    def get_full_name(self, obj):
+        name = f"{obj.first_name} {obj.last_name}".strip()
+        return name or obj.username

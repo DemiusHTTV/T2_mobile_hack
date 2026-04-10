@@ -1,175 +1,296 @@
-from __future__ import annotations
-
-import json
 from datetime import date as date_type
-from datetime import time as time_type
-from functools import wraps
+from datetime import datetime, timedelta
 
-from django.core.exceptions import ValidationError
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
-from django.utils.dateparse import parse_date, parse_time
-from django.views.decorators.http import require_http_methods
+from django.db import transaction
+from django.utils import timezone
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .models import Shift
+from users.models import User
 
-
-def _is_manager(user) -> bool:
-    return bool(user and user.is_authenticated and (user.is_staff or user.is_superuser))
-
-
-def api_login_required(view_func):
-    @wraps(view_func)
-    def _wrapped(request: HttpRequest, *args, **kwargs):
-        if not request.user or not request.user.is_authenticated:
-            return JsonResponse({"error": "Требуется авторизация."}, status=401)
-        return view_func(request, *args, **kwargs)
-
-    return _wrapped
+from .models import DailyWorkloadRequirement, Shift, ShiftChangeRequest, WorkloadRequirement
+from .permissions import IsAdmin, IsHeadOrAdmin
+from .serializers import (
+    DailyWorkloadRequirementSerializer,
+    ShiftSerializer,
+    ShiftChangeRequestSerializer,
+    ShiftChangeRequestUpdateSerializer,
+    WorkloadRequirementSerializer,
+)
 
 
-def _parse_json(request: HttpRequest) -> dict:
-    if not request.body:
-        return {}
-    try:
-        return json.loads(request.body.decode("utf-8"))
-    except json.JSONDecodeError as exc:
-        raise ValidationError("Некорректный JSON в теле запроса.") from exc
+def _is_head_or_admin(user) -> bool:
+    return bool(user and user.is_authenticated and (getattr(user, "is_admin", False) or getattr(user, "is_head", False)))
 
 
-def _serialize_shift(shift: Shift) -> dict:
-    return {
-        "id": shift.id,
-        "employee_id": shift.employee_id,
-        "employee_username": getattr(shift.employee, "username", None),
-        "date": shift.date.isoformat(),
-        "start_time": shift.start_time.strftime("%H:%M"),
-        "end_time": shift.end_time.strftime("%H:%M"),
-        "status": shift.status,
-        "created_at": shift.created_at.isoformat(),
-        "updated_at": shift.updated_at.isoformat(),
-    }
+class ShiftListCreateAPIView(generics.ListCreateAPIView):
+    """
+    GET /api/schedule/shifts/ — список смен (сотрудник: свои; руководитель/admin: все)
+    POST /api/schedule/shifts/ — создание смены (сотрудник: только себе)
+    """
 
+    serializer_class = ShiftSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-def _coerce_date(value) -> date_type | None:
-    if value is None:
-        return None
-    if isinstance(value, date_type):
-        return value
-    if isinstance(value, str):
-        parsed = parse_date(value)
-        if parsed:
-            return parsed
-    raise ValidationError({"date": "Неверная дата. Ожидается YYYY-MM-DD."})
-
-
-def _coerce_time(value, field_name: str) -> time_type | None:
-    if value is None:
-        return None
-    if isinstance(value, time_type):
-        return value
-    if isinstance(value, str):
-        parsed = parse_time(value)
-        if parsed:
-            return parsed
-    raise ValidationError({field_name: "Неверное время. Ожидается HH:MM[:SS]."})
-
-
-@api_login_required
-@require_http_methods(["GET", "POST"])
-def shifts_collection(request: HttpRequest) -> JsonResponse:
-    if request.method == "GET":
+    def get_queryset(self):
+        user = self.request.user
         qs = Shift.objects.select_related("employee")
-        if not _is_manager(request.user):
-            qs = qs.filter(employee=request.user)
+        if not _is_head_or_admin(user):
+            qs = qs.filter(employee=user)
+
+        date_from = self.request.query_params.get("from")
+        date_to = self.request.query_params.get("to")
+        if date_from:
+            qs = qs.filter(date__gte=date_from)
+        if date_to:
+            qs = qs.filter(date__lte=date_to)
+        return qs
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        employee = serializer.validated_data.get("employee")
+        if not _is_head_or_admin(user):
+            serializer.save(employee=user)
+        else:
+            serializer.save(employee=employee or user)
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        return response
+
+
+class ShiftDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    PUT /api/schedule/shifts/{id}/ — редактирование (если не confirmed)
+    DELETE /api/schedule/shifts/{id}/ — удаление (если не confirmed)
+    """
+
+    queryset = Shift.objects.select_related("employee")
+    serializer_class = ShiftSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def _can_access(self, user, shift: Shift) -> bool:
+        return _is_head_or_admin(user) or shift.employee_id == user.id
+
+    def update(self, request, *args, **kwargs):
+        shift: Shift = self.get_object()
+        if not self._can_access(request.user, shift):
+            return Response({"error": "Доступ запрещён."}, status=status.HTTP_403_FORBIDDEN)
+        if shift.status == Shift.Status.CONFIRMED:
+            return Response({"error": "Смена подтверждена и не может быть изменена."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Сотрудник не может подтвердить смену сам
+        if not _is_head_or_admin(request.user) and request.data.get("status") == Shift.Status.CONFIRMED:
+            return Response({"error": "Только руководитель может подтверждать смены."}, status=status.HTTP_403_FORBIDDEN)
+
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        shift: Shift = self.get_object()
+        if not self._can_access(request.user, shift):
+            return Response({"error": "Доступ запрещён."}, status=status.HTTP_403_FORBIDDEN)
+        if shift.status == Shift.Status.CONFIRMED:
+            return Response({"error": "Смена подтверждена и не может быть удалена."}, status=status.HTTP_400_BAD_REQUEST)
+        return super().destroy(request, *args, **kwargs)
+
+
+class WorkloadListCreateAPIView(generics.ListCreateAPIView):
+    """
+    GET /api/schedule/workloads/ — список нагрузок (все авторизованные)
+    POST /api/schedule/workloads/ — создание (только admin)
+    """
+
+    queryset = WorkloadRequirement.objects.all()
+    serializer_class = WorkloadRequirementSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAdmin()]
+        return super().get_permissions()
+
+
+class WorkloadDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    PUT/DELETE /api/schedule/workloads/{id}/ — только admin
+    """
+
+    queryset = WorkloadRequirement.objects.all()
+    serializer_class = WorkloadRequirementSerializer
+    permission_classes = [IsAdmin]
+
+
+class DailyWorkloadListCreateAPIView(generics.ListCreateAPIView):
+    """
+    GET /api/schedule/workloads/daily/ — список нагрузок на дату (все авторизованные)
+    POST /api/schedule/workloads/daily/ — создание (только admin)
+    """
+
+    queryset = DailyWorkloadRequirement.objects.all()
+    serializer_class = DailyWorkloadRequirementSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        date_from = self.request.query_params.get("from")
+        date_to = self.request.query_params.get("to")
+        if date_from:
+            qs = qs.filter(date__gte=date_from)
+        if date_to:
+            qs = qs.filter(date__lte=date_to)
+        return qs
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAdmin()]
+        return super().get_permissions()
+
+
+class DailyWorkloadDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = DailyWorkloadRequirement.objects.all()
+    serializer_class = DailyWorkloadRequirementSerializer
+    permission_classes = [IsAdmin]
+
+
+class OptimizeScheduleAPIView(APIView):
+    """
+    POST /api/schedule/optimize/
+    Body: { "from": "YYYY-MM-DD", "to": "YYYY-MM-DD" }
+
+    Генерирует плановые смены по нагрузке.
+    Правила:
+    - использовать daily workload если есть на дату, иначе weekly workload по weekday
+    - распределять по сотрудникам по рейтингу (лучшие чаще), но с балансировкой по нагрузке
+    - не назначать >1 смены на сотрудника в день
+    - не трогать confirmed смены
+    """
+
+    permission_classes = [IsHeadOrAdmin]
+
+    def post(self, request):
+        date_from = request.data.get("from")
+        date_to = request.data.get("to")
+        if not date_from or not date_to:
+            return Response({"error": "Нужно указать from/to."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            date_from = request.GET.get("from")
-            date_to = request.GET.get("to")
-            if date_from:
-                qs = qs.filter(date__gte=_coerce_date(date_from))
-            if date_to:
-                qs = qs.filter(date__lte=_coerce_date(date_to))
-        except ValidationError as exc:
-            return JsonResponse(
-                {"error": exc.message_dict if hasattr(exc, "message_dict") else str(exc)},
-                status=400,
-            )
+            start = datetime.fromisoformat(date_from).date()
+            end = datetime.fromisoformat(date_to).date()
+        except Exception:
+            return Response({"error": "Неверный формат дат. Ожидается YYYY-MM-DD."}, status=status.HTTP_400_BAD_REQUEST)
 
-        return JsonResponse({"results": [_serialize_shift(s) for s in qs]}, status=200)
+        if end < start:
+            return Response({"error": "to не может быть меньше from."}, status=status.HTTP_400_BAD_REQUEST)
 
-    # POST
-    try:
-        payload = _parse_json(request)
-    except ValidationError as exc:
-        return JsonResponse(
-            {"error": exc.message_dict if hasattr(exc, "message_dict") else str(exc)},
-            status=400,
-        )
-    employee_id = payload.get("employee_id")
+        employees = list(User.objects.filter(role=User.RoleChoices.EMPLOYEE, is_active=True).order_by("-rating", "id"))
+        if not employees:
+            return Response({"error": "Нет сотрудников для распределения."}, status=status.HTTP_400_BAD_REQUEST)
 
-    shift = Shift(
-        employee_id=employee_id if (employee_id and _is_manager(request.user)) else request.user.id,
-        date=_coerce_date(payload.get("date")),
-        start_time=_coerce_time(payload.get("start_time"), "start_time"),
-        end_time=_coerce_time(payload.get("end_time"), "end_time"),
-        status=payload.get("status") or Shift.Status.PLAN,
-    )
+        # Preload workloads
+        daily_workloads = list(DailyWorkloadRequirement.objects.filter(date__gte=start, date__lte=end))
+        daily_map: dict[date_type, list[DailyWorkloadRequirement]] = {}
+        for w in daily_workloads:
+            daily_map.setdefault(w.date, []).append(w)
 
-    try:
-        shift.full_clean()
-    except ValidationError as exc:
-        return JsonResponse({"error": exc.message_dict if hasattr(exc, "message_dict") else str(exc)}, status=400)
+        weekly_workloads = list(WorkloadRequirement.objects.all())
+        weekly_map: dict[int, list[WorkloadRequirement]] = {}
+        for w in weekly_workloads:
+            weekly_map.setdefault(int(w.weekday), []).append(w)
 
-    shift.save()
-    shift.refresh_from_db()
-    return JsonResponse(_serialize_shift(shift), status=201)
+        # Track per-employee assignments
+        assigned_total: dict[int, int] = {e.id: 0 for e in employees}
+
+        created = 0
+        skipped = 0
+
+        def pick_employee(day: date_type, used_ids: set[int]) -> User | None:
+            # Score = rating - 10*assigned_total to balance a bit
+            best = None
+            best_score = None
+            for e in employees:
+                if e.id in used_ids:
+                    continue
+                score = int(getattr(e, "rating", 0)) - 10 * assigned_total.get(e.id, 0)
+                if best is None or score > best_score:
+                    best = e
+                    best_score = score
+            return best
+
+        with transaction.atomic():
+            day = start
+            while day <= end:
+                # Determine workload slots for this day
+                slots = daily_map.get(day)
+                if slots is None:
+                    # weekday: Mon=0..Sun=6
+                    weekday = (day.weekday())  # python: Mon=0..Sun=6 matches our model
+                    slots = weekly_map.get(weekday, [])
+
+                if not slots:
+                    day += timedelta(days=1)
+                    continue
+
+                # do not overwrite confirmed; also clean old plan shifts for this day (manager/admin view)
+                Shift.objects.filter(date=day).exclude(status=Shift.Status.CONFIRMED).delete()
+
+                used_today: set[int] = set()
+                for slot in sorted(slots, key=lambda x: x.start_time):
+                    required = int(slot.required)
+                    for _ in range(required):
+                        e = pick_employee(day, used_today)
+                        if not e:
+                            skipped += 1
+                            continue
+                        used_today.add(e.id)
+                        assigned_total[e.id] = assigned_total.get(e.id, 0) + 1
+                        Shift.objects.create(
+                            employee=e,
+                            date=day,
+                            start_time=slot.start_time,
+                            end_time=slot.end_time,
+                            status=Shift.Status.PLAN,
+                        )
+                        created += 1
+
+                day += timedelta(days=1)
+
+        return Response({"created": created, "skipped": skipped}, status=status.HTTP_200_OK)
 
 
-@api_login_required
-@require_http_methods(["PUT", "DELETE"])
-def shift_detail(request: HttpRequest, shift_id: int) -> HttpResponse:
-    shift = get_object_or_404(Shift.objects.select_related("employee"), pk=shift_id)
+class ChangeRequestListCreateAPIView(generics.ListCreateAPIView):
+    """
+    GET /api/schedule/change-requests/ — сотрудник видит свои, менеджер/admin — все
+    POST /api/schedule/change-requests/ — создать запрос (сотрудник)
+    """
 
-    if not (_is_manager(request.user) or shift.employee_id == request.user.id):
-        return JsonResponse({"error": "Доступ запрещён."}, status=403)
+    serializer_class = ShiftChangeRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-    if shift.status == Shift.Status.CONFIRMED:
-        return JsonResponse({"error": "Смена подтверждена и не может быть изменена."}, status=400)
+    def get_queryset(self):
+        user = self.request.user
+        qs = ShiftChangeRequest.objects.select_related("employee")
+        if not _is_head_or_admin(user):
+            qs = qs.filter(employee=user)
 
-    if request.method == "DELETE":
-        shift.delete()
-        return HttpResponse(status=204)
+        status_q = self.request.query_params.get("status")
+        if status_q:
+            qs = qs.filter(status=status_q)
+        return qs
 
-    # PUT
-    try:
-        payload = _parse_json(request)
-    except ValidationError as exc:
-        return JsonResponse(
-            {"error": exc.message_dict if hasattr(exc, "message_dict") else str(exc)},
-            status=400,
-        )
+    def perform_create(self, serializer):
+        serializer.save(employee=self.request.user)
 
-    if "status" in payload:
-        new_status = payload.get("status")
-        if new_status == Shift.Status.CONFIRMED and not _is_manager(request.user):
-            return JsonResponse({"error": "Только руководитель может подтверждать смены."}, status=403)
-        shift.status = new_status
 
-    if "date" in payload:
-        shift.date = _coerce_date(payload.get("date"))
+class ChangeRequestDetailAPIView(generics.RetrieveUpdateAPIView):
+    """
+    PUT /api/schedule/change-requests/{id}/ — изменить статус (manager/admin)
+    """
 
-    if "start_time" in payload:
-        shift.start_time = _coerce_time(payload.get("start_time"), "start_time")
+    queryset = ShiftChangeRequest.objects.select_related("employee")
+    permission_classes = [IsHeadOrAdmin]
 
-    if "end_time" in payload:
-        shift.end_time = _coerce_time(payload.get("end_time"), "end_time")
-
-    try:
-        shift.full_clean()
-    except ValidationError as exc:
-        return JsonResponse({"error": exc.message_dict if hasattr(exc, "message_dict") else str(exc)}, status=400)
-
-    shift.save(update_fields=["date", "start_time", "end_time", "status", "updated_at"])
-    shift.refresh_from_db()
-    return JsonResponse(_serialize_shift(shift), status=200)
+    def get_serializer_class(self):
+        if self.request.method == "PUT":
+            return ShiftChangeRequestUpdateSerializer
+        return ShiftChangeRequestSerializer

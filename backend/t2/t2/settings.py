@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 
@@ -24,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-xo+!33(431lyvoay@h%lqh7(7hw0$oqvq-pv-p^6+ktm)yzkf3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "1") == "1"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
+ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,testserver").split(",") if h.strip()]
 
 
 # Application definition
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -86,7 +88,7 @@ WSGI_APPLICATION = 't2.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.getenv("DB_NAME", str(BASE_DIR / 'db.sqlite3')),
     }
 }
 
@@ -126,6 +128,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
@@ -159,6 +162,6 @@ LOGIN_URL = "/accounts/login/"
 
 # Yandex AI Settings
 # Получите API ключ на https://cloud.yandex.ru/
-YANDEX_AI_API_KEY = ""
-YANDEX_AI_PROJECT_ID = "b1gsdtq8rcvr9irn0bp9"
-YANDEX_AI_PROMPT_ID = "fvt36i3obvunn1od9ao3"
+YANDEX_AI_API_KEY = os.getenv("YANDEX_AI_API_KEY", "")
+YANDEX_AI_PROJECT_ID = os.getenv("YANDEX_AI_PROJECT_ID", "b1gsdtq8rcvr9irn0bp9")
+YANDEX_AI_PROMPT_ID = os.getenv("YANDEX_AI_PROMPT_ID", "fvt36i3obvunn1od9ao3")
