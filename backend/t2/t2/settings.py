@@ -22,6 +22,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
+SECRET_KEY = 'django-insecure-uju$)tzh28=sn!h3k1#y64yir!qjb6q$e&7omo_d3$nrpkwyoi'
+
+SECRET_KEY = 'django-insecure-xo+!33(431lyvoay@h%lqh7(7hw0$oqvq-pv-p^6+ktm)yzkf3'
+
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv("DEBUG", "1") == "1"
+
+
+ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
+ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,testserver").split(",") if h.strip()]
 SECRET_KEY = 'django-insecure-xo+!33(431lyvoay@h%lqh7(7hw0$oqvq-pv-p^6+ktm)yzkf3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -40,6 +54,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    
+    # Third party
+    'rest_framework',
+    'rest_framework_simplejwt',
+    
+    # Local apps
+    'users',
+
+    'schedule',
+
     # Third party
     'rest_framework',
     'rest_framework_simplejwt',
@@ -54,6 +78,8 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -67,6 +93,10 @@ ROOT_URLCONF = 't2.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+
+        'DIRS': [],
+
+        'DIRS': [BASE_DIR / 'templates'],
         'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -115,6 +145,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
+
+LANGUAGE_CODE = 'en-us'
+
+
+=======
 LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'Asia/Irkutsk'
@@ -157,6 +192,13 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+# Timezone - Irkutsk (UTC+7)
+TIME_ZONE = 'Asia/Irkutsk'
+USE_TZ = True
+
+LOGIN_URL = "/accounts/login/"
+
+
 # Login URL
 LOGIN_URL = "/accounts/login/"
 
@@ -165,3 +207,4 @@ LOGIN_URL = "/accounts/login/"
 YANDEX_AI_API_KEY = os.getenv("YANDEX_AI_API_KEY", "")
 YANDEX_AI_PROJECT_ID = os.getenv("YANDEX_AI_PROJECT_ID", "b1gsdtq8rcvr9irn0bp9")
 YANDEX_AI_PROMPT_ID = os.getenv("YANDEX_AI_PROMPT_ID", "fvt36i3obvunn1od9ao3")
+
