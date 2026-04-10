@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSheet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">SMARTSHEET</div>
+            <nav class="menu" id="main-menu">
+                <a href="#" class="menu-link active" data-section="board">График</a>
+                <a href="#" class="menu-link" data-section="team">Команда</a>
+                <a href="#" class="menu-link" data-section="settings">Настройки</a>
+                <a href="#" class="menu-link" data-section="rating">Рейтинг</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <button class="hamburger" id="hamburger">
+                    <span></span><span></span><span></span>
+                </button>
+                <h1 class="page-title" id="header-title">Панель управления</h1>
+                <div class="header-actions">
+                    <button class="btn-assistant" id="open-ai-chat">AI Assistant</button>
+                    <button class="btn-optimize">ОПТИМИЗИРОВАТЬ</button>
+                </div>
+            </header>
+
+            <section class="board content-section active" id="board">
+                <div class="shift-group">
+                    <div class="time-column">
+                        <div class="time-content">
+                            <span class="shift-name">Утро</span>
+                            <span class="shift-hours">8:00–12:00</span>
+                        </div>
+                    </div>
+                    <div class="drop-area">
+                        <div class="employee-card">
+                            <span class="name">Трубачев Дмитрий</span>
+                            <span class="role">продавец</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="shift-group">
+                    <div class="time-column"><div class="time-content"><span class="shift-name">День</span><span class="shift-hours">12:30–16:00</span></div></div>
+                    <div class="drop-area"></div>
+                </div>
+                <div class="shift-group">
+                    <div class="time-column"><div class="time-content"><span class="shift-name">Вечер</span><span class="shift-hours">16:00–20:00</span></div></div>
+                    <div class="drop-area"></div>
+                </div>
+            </section>
+
+            <section class="content-section" id="team"><div class="placeholder-content"><h2>Команда</h2></div></section>
+            <section class="content-section" id="settings"><div class="placeholder-content"><h2>Настройки</h2></div></section>
+            <section class="content-section" id="rating"><div class="placeholder-content"><h2>Рейтинг</h2></div></section>
+        </main>
+    </div>
+
+    <div class="chat-overlay" id="ai-chat-overlay">
+        <div class="chat-window">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="ai-status-dot"></div>
+                    <span class="chat-title">Smart Assistant</span>
+                </div>
+                <button id="close-chat" class="chat-close-btn">×</button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="msg bot">Привет! Я твой интеллектуальный помощник SmartSheet. Чем я могу помочь тебе сегодня?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="user-input" placeholder="Спросите что угодно...">
+                <button id="send-btn">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script> 
+        const hb = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const menuLinks = document.querySelectorAll('.menu-link');
+        const sections = document.querySelectorAll('.content-section');
+        const headerTitle = document.getElementById('header-title');
+
+        // Чат элементы
+        const chatOverlay = document.getElementById('ai-chat-overlay');
+        const openChatBtn = document.getElementById('open-ai-chat');
+        const closeChatBtn = document.getElementById('close-chat');
+        const sendBtn = document.getElementById('send-btn');
+        const userInput = document.getElementById('user-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        // Переключение разделов
+        menuLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                menuLinks.forEach(l => l.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+                link.classList.add('active');
+                const sectionId = link.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+                headerTitle.textContent = link.textContent;
+                sidebar.classList.remove('open');
+                hb.style.opacity = '1';
+            });
+        });
+
+        // Гамбургер
+        hb.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle('open');
+            hb.style.opacity = sidebar.classList.contains('open') ? '0' : '1';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && e.target !== hb) {
+                sidebar.classList.remove('open');
+                hb.style.opacity = '1';
+            }
+        });
+
+        // ЛОГИКА АССИСТЕНТА
+        openChatBtn.onclick = () => chatOverlay.classList.add('show');
+        closeChatBtn.onclick = () => chatOverlay.classList.remove('show');
+        
+        chatOverlay.onclick = (e) => {
+            if (e.target === chatOverlay) chatOverlay.classList.remove('show');
+        };
+
+        function addMessage(text, type) {
+            const msg = document.createElement('div');
+            msg.className = `msg ${type}`;
+            msg.textContent = text;
+            chatMessages.appendChild(msg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        sendBtn.onclick = () => {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            userInput.value = '';
+
+            setTimeout(() => {
+                addMessage("Я анализирую ваш запрос... Как я могу оптимизировать вашу работу в SmartSheet?", "bot");
+            }, 1000);
+        };
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendBtn.click();
+        });
+    </script>
+</body>
+</html>

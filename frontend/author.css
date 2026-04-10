@@ -1,0 +1,112 @@
+:root {
+    --bg-creme: #FFFDEF;
+    --accent-purple: #9B51E0;
+    --card-green: #E2F9D3;
+    --text-main: #333;
+    --text-light: #888;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: var(--bg-creme);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-container { width: 100%; max-width: 400px; padding: 20px; }
+
+.auth-card {
+    background: #fff;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.logo {
+    font-weight: 800;
+    color: #CCC;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+    font-size: 14px;
+}
+
+.auth-title { font-size: 22px; font-weight: 700; margin-bottom: 30px; color: var(--text-main); }
+
+/* ШАГИ */
+.auth-step { display: none; }
+.auth-step.active { display: block; animation: fadeIn 0.3s ease; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* КНОПКИ РОЛЕЙ */
+.role-grid { display: flex; flex-direction: column; gap: 12px; }
+
+.role-btn {
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #eee;
+    background: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: 0.2s;
+}
+
+.role-btn:hover {
+    background: var(--card-green);
+    border-color: transparent;
+    transform: translateX(5px);
+}
+
+.role-icon { font-size: 20px; }
+
+/* ФОРМА */
+.back-btn {
+    background: none; border: none; color: var(--accent-purple);
+    font-weight: 600; cursor: pointer; margin-bottom: 20px;
+    display: block;
+}
+
+.input-group { text-align: left; margin-bottom: 20px; }
+.input-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-light); margin-bottom: 8px; }
+.input-group input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    background: #f9f9f9;
+    font-family: 'Inter';
+    outline: none;
+    transition: 0.2s;
+}
+
+.input-group input:focus { border-color: var(--accent-purple); background: #fff; }
+
+.submit-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: none;
+    background: var(--accent-purple);
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+.submit-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+.submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+.error-msg { color: #eb5757; font-size: 13px; margin-bottom: 15px; display: none; }
