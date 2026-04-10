@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartSheet | Личный кабинет</title>
+    <title>SmartSheet | WorkSpace</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="empl.css">
 </head>
 <body>
@@ -15,110 +14,135 @@
         <div class="sidebar-overlay" id="overlay"></div>
 
         <aside class="sidebar" id="sidebar">
-            <div class="logo">SMARTSHEET</div>
+            <div class="logo-sidebar">SMARTSHEET</div>
             <nav class="menu">
-                <a href="#" class="menu-link active" data-section="schedule">Мой график</a>
-                <a href="#" class="menu-link" data-section="team">Команда</a>
-                <a href="#" class="menu-link" data-section="settings">Настройки</a>
-                <a href="#" class="menu-link" data-section="rating">Рейтинг</a>
+                <a href="#" class="menu-link active" data-target="schedule">Мой график</a>
+                <a href="#" class="menu-link" data-target="team">Команда</a>
+                <a href="#" class="menu-link" data-target="settings">Настройки</a>
+                <a href="#" class="menu-link" data-target="rating">Рейтинг</a>
             </nav>
         </aside>
 
         <main class="main-content">
             <header class="header">
                 <div class="burger-menu" id="burger-btn">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span>
                 </div>
-                
-                <h1 class="page-title" id="header-title">Апрель 2026</h1>
-                
+                <h1 class="page-title" id="main-title">Апрель 2026</h1>
+                <div class="mobile-welcome">Привет, Дмитрий!</div>
                 <div class="user-info">
-                    <span class="user-welcome">Привет, Дмитрий!</span>
+                    <span class="user-name-desktop">Привет, Дмитрий!</span>
                     <div class="user-avatar">ДТ</div>
-                    <div class="profile-icon-mobile">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                    </div>
                 </div>
             </header>
 
             <section class="content-section active" id="schedule">
                 <div class="calendar-wrapper">
-                    <div class="calendar-month-grid">
+                    <div class="calendar-grid">
                         <div class="weekday">Пн</div><div class="weekday">Вт</div><div class="weekday">Ср</div><div class="weekday">Чт</div><div class="weekday">Пт</div><div class="weekday">Сб</div><div class="weekday">Вс</div>
-                        
-                        <div class="day-cell empty"></div>
-                        <div class="day-cell empty"></div>
-                        <div class="day-cell"><span>1</span></div>
-                        <div class="day-cell work-day active-day-mobile">
-                            <span>2</span>
-                            <span class="shift-tag">СМЕНА</span>
-                        </div>
-                        <div class="day-cell work-day"><span>3</span><span class="shift-tag">СМЕНА</span></div>
-                        <div class="day-cell"><span>4</span></div>
-                        <div class="day-cell"><span>5</span></div>
-                        <div class="day-cell work-day"><span>6</span><span class="shift-tag">СМЕНА</span></div>
-                        <div class="day-cell work-day"><span>7</span><span class="shift-tag">СМЕНА</span></div>
-                        <div class="day-cell"><span>8</span></div>
+                        <div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div>
+                        <div class="day-cell"><span>1</span></div><div class="day-cell"><span>2</span></div><div class="day-cell"><span>3</span></div>
+                        <div class="day-cell"><span>4</span></div><div class="day-cell"><span>5</span></div><div class="day-cell"><span>6</span></div><div class="day-cell"><span>7</span></div>
+                        <div class="day-cell"><span>8</span></div><div class="day-cell"><span>9</span></div><div class="day-cell active-mobile"><span>10</span></div>
+                        <div class="day-cell"><span>11</span></div>
+                        <div class="day-cell work-day"><span>12</span><span class="shift-tag">СМЕНА</span></div>
+                        <div class="day-cell"><span>13</span></div>
+                        <div class="day-cell work-day"><span>14</span><span class="shift-tag">СМЕНА</span></div>
                     </div>
                 </div>
-
-                <div class="mobile-shift-details">
-                    <div class="details-card">
+                <div class="mobile-details">
+                    <div class="shift-card">
                         <h2>Твоя смена во вторник</h2>
                         <div class="role-text">Продавец</div>
                         <div class="time-text">08:00 — 12:00</div>
-                        <div class="location-text">Тц "Сильвер Молл"</div>
+                        <div class="loc-text">ТЦ "Сильвер Молл"</div>
                     </div>
-                    <div class="mobile-footer-actions">
-                        <button class="btn-gray">Нужна подмена</button>
-                        <button class="btn-purple">Подтвердить смену</button>
+                    <div class="action-buttons">
+                        <button class="btn-sub" id="btn-sub">Нужна подмена</button>
+                        <button class="btn-confirm" id="btn-confirm">Подтвердить смену</button>
                     </div>
                 </div>
             </section>
 
-            <section class="content-section" id="team"><div class="section-container"><h2>Команда</h2></div></section>
-            <section class="content-section" id="settings"><div class="section-container"><h2>Настройки</h2></div></section>
-            <section class="content-section" id="rating"><div class="section-container"><h2>Рейтинг</h2></div></section>
+            <section class="content-section" id="team">
+                <div class="placeholder-card"><h2>Команда</h2><p>Список сотрудников в сети.</p></div>
+            </section>
+            <section class="content-section" id="settings">
+                <div class="placeholder-card"><h2>Настройки</h2><p>Управление профилем.</p></div>
+            </section>
+            <section class="content-section" id="rating">
+                <div class="placeholder-card"><h2>Рейтинг</h2><p>Ваша позиция: 3 место.</p></div>
+            </section>
         </main>
     </div>
 
+    <div class="chat-overlay" id="chat-bot">
+        <div class="chat-window">
+            <div class="chat-header"><span>Smart Assistant</span><button id="close-chat">×</button></div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="msg bot">Привет! Опиши причину отсутствия, и я отправлю запрос.</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="user-input" placeholder="Сообщение..."><button id="send-btn">➤</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const burgerBtn = document.getElementById('burger-btn');
+        const burger = document.getElementById('burger-btn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        const links = document.querySelectorAll('.menu-link');
+        const menuLinks = document.querySelectorAll('.menu-link');
         const sections = document.querySelectorAll('.content-section');
-        const title = document.getElementById('header-title');
 
-        // Переключение меню
         function toggleMenu() {
-            burgerBtn.classList.toggle('open');
             sidebar.classList.toggle('show');
             overlay.classList.toggle('show');
+            burger.classList.toggle('hidden-burger');
         }
 
-        burgerBtn.addEventListener('click', toggleMenu);
-        overlay.addEventListener('click', toggleMenu);
+        burger.onclick = toggleMenu;
+        overlay.onclick = toggleMenu;
 
         // Навигация
-        links.forEach(link => {
-            link.addEventListener('click', (e) => {
+        menuLinks.forEach(link => {
+            link.onclick = (e) => {
                 e.preventDefault();
-                const target = link.getAttribute('data-section');
-                
-                links.forEach(l => l.classList.remove('active'));
-                sections.forEach(s => s.classList.remove('active'));
-                
+                const target = link.getAttribute('data-target');
+                menuLinks.forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
+                sections.forEach(s => s.classList.remove('active'));
                 document.getElementById(target).classList.add('active');
-                title.textContent = (target === 'schedule') ? "Апрель 2026" : link.textContent;
-
-                // Закрываем меню на мобилке после клика
-                if (window.innerWidth <= 768) toggleMenu();
-            });
+                document.getElementById('main-title').textContent = link.textContent;
+                if(window.innerWidth <= 768) toggleMenu();
+            };
         });
+
+        // Чат и кнопки
+        const chatBot = document.getElementById('chat-bot');
+        const btnSub = document.getElementById('btn-sub');
+        btnSub.onclick = () => chatBot.classList.add('show');
+        document.getElementById('close-chat').onclick = () => chatBot.classList.remove('show');
+
+        document.getElementById('btn-confirm').onclick = function() {
+            this.textContent = '✓ Подтверждено';
+            this.classList.add('confirmed');
+        };
+
+        function sendMsg() {
+            const val = document.getElementById('user-input').value.trim();
+            if(!val) return;
+            const m = document.createElement('div'); m.className='msg user'; m.textContent=val;
+            document.getElementById('chat-messages').appendChild(m);
+            document.getElementById('user-input').value='';
+            setTimeout(() => {
+                const b = document.createElement('div'); b.className='msg bot'; b.textContent='Запрос создан!';
+                document.getElementById('chat-messages').appendChild(b);
+                setTimeout(() => chatBot.classList.remove('show'), 1000);
+                btnSub.textContent = 'Поиск...'; btnSub.style.color = '#ff9800';
+            }, 600);
+        }
+        document.getElementById('send-btn').onclick = sendMsg;
     </script>
 </body>
 </html>
