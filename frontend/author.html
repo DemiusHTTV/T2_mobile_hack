@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSheet | Авторизация</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="author.css">
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="logo">SMARTSHEET</div>
+            
+            <div id="step-role" class="auth-step active">
+                <h1 class="auth-title">Выберите роль</h1>
+                <div class="role-grid">
+                    <button class="role-btn" onclick="selectRole('admin')">
+                        <span class="role-icon"></span>
+                        Администратор
+                    </button>
+                    <button class="role-btn" onclick="selectRole('manager')">
+                        <span class="role-icon"></span>
+                        Менеджер
+                    </button>
+                    <button class="role-btn" onclick="selectRole('employee')">
+                        <span class="role-icon"></span>
+                        Сотрудник
+                    </button>
+                </div>
+            </div>
+
+            <div id="step-login" class="auth-step">
+                <button class="back-btn" onclick="goToStep('step-role')">← Назад</button>
+                <h1 class="auth-title" id="login-title">Вход</h1>
+                <form id="login-form">
+                    <div class="input-group">
+                        <label>Логин</label>
+                        <input type="text" id="username" placeholder="Введите логин" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Пароль</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+                    <div id="error-msg" class="error-msg">Неверный логин или пароль</div>
+                    <button type="submit" class="submit-btn" id="submit-btn">Войти</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedRole = '';
+
+        function selectRole(role) {
+            selectedRole = role;
+            const titles = {
+                admin: 'Вход: Администратор',
+                manager: 'Вход: Менеджер',
+                employee: 'Вход: Сотрудник'
+            };
+            document.getElementById('login-title').textContent = titles[role];
+            goToStep('step-login');
+        }
+
+        function goToStep(stepId) {
+            document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
+            document.getElementById(stepId).classList.add('active');
+            document.getElementById('error-msg').style.display = 'none';
+        }
+
+        // Заглушка для API
+        async function fakeApiCall(username, password, role) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if (username === 'admin' && password === '1234') {
+                        resolve({ token: 'fake-jwt-token', user: { name: 'Дмитрий', role: role } });
+                    } else {
+                        reject('Ошибка авторизации');
+                    }
+                }, 1000);
+            });
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const error = document.getElementById('error-msg');
+            
+            btn.disabled = true;
+            btn.textContent = 'Проверка...';
+            error.style.display = 'none';
+
+            try {
+                const res = await fakeApiCall(
+                    document.getElementById('username').value,
+                    document.getElementById('password').value,
+                    selectedRole
+                );
+                console.log('Успех:', res);
+                // Перенаправление на основную страницу
+                window.location.href = 'empl.html'; 
+            } catch (err) {
+                error.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Войти';
+            }
+        });
+    </script>
+</body>
+</html>
