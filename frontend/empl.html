@@ -38,8 +38,9 @@
 
             <section class="content-section active" id="schedule">
                 <div class="calendar-wrapper">
-                    <div class="calendar-grid">
+                    <div class="calendar-grid" id="calendar-grid">
                         <div class="weekday">Пн</div><div class="weekday">Вт</div><div class="weekday">Ср</div><div class="weekday">Чт</div><div class="weekday">Пт</div><div class="weekday">Сб</div><div class="weekday">Вс</div>
+<<<<<<< HEAD
                         <div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div>
                         <div class="day-cell"><span>1</span></div><div class="day-cell"><span>2</span></div><div class="day-cell"><span>3</span></div>
                         <div class="day-cell"><span>4</span></div><div class="day-cell"><span>5</span></div><div class="day-cell"><span>6</span></div><div class="day-cell"><span>7</span></div>
@@ -61,10 +62,13 @@
                     <div class="action-buttons">
                         <button class="btn-sub" id="btn-sub">Нужна подмена</button>
                         <button class="btn-confirm" id="btn-confirm">Подтвердить смену</button>
+=======
+>>>>>>> 0f9c9d7 (feat: modified view for employeers)
                     </div>
                 </div>
             </section>
 
+<<<<<<< HEAD
             <section class="content-section" id="team">
                 <div class="placeholder-card"><h2>Команда</h2><p>Список сотрудников в сети.</p></div>
             </section>
@@ -85,14 +89,36 @@
                     <div class="workload-list" id="workload-list"></div>
                 </div>
             </section>
+=======
+            <section class="content-section" id="team"><div class="placeholder-card"><h2>Команда</h2></div></section>
+            <section class="content-section" id="settings"><div class="placeholder-card"><h2>Настройки</h2></div></section>
+            <section class="content-section" id="rating"><div class="placeholder-card"><h2>Рейтинг</h2></div></section>
+>>>>>>> 0f9c9d7 (feat: modified view for employeers)
         </main>
+    </div>
+
+    <div class="modal-overlay" id="modal-shift">
+        <div class="modal-card">
+            <button class="modal-close" id="close-modal">×</button>
+            <h2 id="modal-date-text">Смена: 12 апреля</h2>
+            <div class="modal-info">
+                <p><strong>Время:</strong> 08:00 — 20:00</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-need-sub">Нужна подмена</button>
+                <button class="btn-primary" id="btn-confirm-shift">Подтвердить</button>
+            </div>
+        </div>
     </div>
 
     <div class="chat-overlay" id="chat-bot">
         <div class="chat-window">
-            <div class="chat-header"><span>Smart Assistant</span><button id="close-chat">×</button></div>
+            <div class="chat-header">
+                <span class="chat-title">Поиск подмены</span>
+                <button id="close-chat" class="chat-close-btn">×</button>
+            </div>
             <div class="chat-messages" id="chat-messages">
-                <div class="msg bot">Привет! Опиши причину отсутствия, и я отправлю запрос.</div>
+                <div class="msg bot">Привет! Напиши причину подмены.</div>
             </div>
             <div class="chat-input-area">
                 <input type="text" id="user-input" placeholder="Сообщение..."><button id="send-btn">➤</button>
@@ -143,9 +169,14 @@
     </div>
 
     <script>
+        const grid = document.getElementById('calendar-grid');
+        const modal = document.getElementById('modal-shift');
+        const chatBot = document.getElementById('chat-bot');
+        const chatMessages = document.getElementById('chat-messages');
         const burger = document.getElementById('burger-btn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
+<<<<<<< HEAD
         const sections = document.querySelectorAll('.content-section');
         const btnWorkloadOpen = document.getElementById('btn-workload-open');
         const workloadModal = document.getElementById('workload-modal');
@@ -156,16 +187,36 @@
         const workloadSummary = document.getElementById('workload-summary');
         const workloadList = document.getElementById('workload-list');
         const shiftTitle = document.getElementById('shift-title');
+=======
+        const closeChat = document.getElementById('close-chat');
+        let selectedDayCell = null;
+>>>>>>> 0f9c9d7 (feat: modified view for employeers)
 
+        // Календарь (31 день)
+        for(let i=0; i<3; i++) grid.innerHTML += '<div class="day-cell empty"></div>';
+        for(let d=1; d<=31; d++) {
+            const cell = document.createElement('div');
+            cell.className = 'day-cell';
+            if(d % 4 === 0) cell.classList.add('has-shift');
+            cell.innerHTML = `<span>${d}</span>${d % 4 === 0 ? '<span class="shift-tag">СМЕНА</span>' : ''}`;
+            cell.onclick = () => {
+                selectedDayCell = cell;
+                document.getElementById('modal-date-text').textContent = `Смена: ${d} апреля`;
+                modal.classList.add('show');
+            };
+            grid.appendChild(cell);
+        }
+
+        // Бургер-меню
         function toggleMenu() {
             sidebar.classList.toggle('show');
             overlay.classList.toggle('show');
             burger.classList.toggle('hidden-burger');
         }
-
         burger.onclick = toggleMenu;
         overlay.onclick = toggleMenu;
 
+<<<<<<< HEAD
         function bindNavigation() {
             document.querySelectorAll('.menu-link').forEach(link => {
                 link.onclick = (e) => {
@@ -417,19 +468,49 @@
         renderWorkloadSummary();
 
         function sendMsg() {
+=======
+        // Навигация
+        document.querySelectorAll('.menu-link').forEach(link => {
+            link.onclick = (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                link.classList.add('active');
+                document.getElementById(link.getAttribute('data-target')).classList.add('active');
+                if(window.innerWidth <= 768) toggleMenu();
+            };
+        });
+
+        // Модалка и Чат
+        document.getElementById('close-modal').onclick = () => modal.classList.remove('show');
+        document.getElementById('btn-confirm-shift').onclick = () => {
+            selectedDayCell.className = 'day-cell work-day';
+            selectedDayCell.querySelector('.shift-tag').textContent = 'ПРИНЯТО';
+            modal.classList.remove('show');
+        };
+        document.getElementById('btn-need-sub').onclick = () => {
+            modal.classList.remove('show');
+            chatBot.classList.add('show');
+        };
+        closeChat.onclick = () => chatBot.classList.remove('show');
+        
+        document.getElementById('send-btn').onclick = function() {
+>>>>>>> 0f9c9d7 (feat: modified view for employeers)
             const val = document.getElementById('user-input').value.trim();
             if(!val) return;
-            const m = document.createElement('div'); m.className='msg user'; m.textContent=val;
-            document.getElementById('chat-messages').appendChild(m);
-            document.getElementById('user-input').value='';
+            const uM = document.createElement('div'); uM.className = 'msg user'; uM.textContent = val;
+            chatMessages.appendChild(uM);
+            document.getElementById('user-input').value = '';
             setTimeout(() => {
-                const b = document.createElement('div'); b.className='msg bot'; b.textContent='Запрос создан!';
-                document.getElementById('chat-messages').appendChild(b);
-                setTimeout(() => chatBot.classList.remove('show'), 1000);
-                btnSub.textContent = 'Поиск...'; btnSub.style.color = '#ff9800';
-            }, 600);
-        }
-        document.getElementById('send-btn').onclick = sendMsg;
+                const bM = document.createElement('div'); bM.className = 'msg bot'; bM.textContent = 'Ок, ищу замену!';
+                chatMessages.appendChild(bM);
+                if(selectedDayCell) {
+                    selectedDayCell.className = 'day-cell on-wait';
+                    selectedDayCell.querySelector('.shift-tag').textContent = 'ПОИСК...';
+                }
+                setTimeout(() => chatBot.classList.remove('show'), 1500);
+            }, 800);
+        };
     </script>
 </body>
 </html>
