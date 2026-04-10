@@ -610,7 +610,9 @@
                 input.value = '';
                 setTimeout(() => {
                     const b = document.createElement('div'); b.className = 'msg bot';
-                    b.textContent = 'AI-ответ (демо): я передал запрос менеджеру/учёл пожелания. В реальной версии подключим модель.';
+
+                    b.textContent = 'AI-ответ (демо): интеграция с Yandex Cloud отключена.';
+
                     messages.appendChild(b);
                     messages.scrollTop = messages.scrollHeight;
                 }, 600);
