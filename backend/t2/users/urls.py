@@ -4,7 +4,8 @@ from .views import (
     ChangePasswordAPIView, UserListAPIView, UserRetrieveAPIView,
     OrganizationListAPIView, OrganizationDetailAPIView,
     DepartmentListAPIView, DepartmentDetailAPIView,
-    DepartmentEmployeesAPIView
+    DepartmentEmployeesAPIView,
+    RatingsAPIView,
 )
 
 urlpatterns = [
@@ -27,4 +28,7 @@ urlpatterns = [
     path('departments/', DepartmentListAPIView.as_view(), name='department-list'),
     path('departments/<int:pk>/', DepartmentDetailAPIView.as_view(), name='department-detail'),
     path('departments/<int:department_id>/employees/', DepartmentEmployeesAPIView.as_view(), name='department-employees'),
+
+    # Ratings
+    path('ratings/', RatingsAPIView.as_view(), name='ratings'),
 ]

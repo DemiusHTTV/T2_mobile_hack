@@ -68,6 +68,7 @@ class User(AbstractUser):
         verbose_name="Организация"
     )
     phone = models.CharField(max_length=20, blank=True, verbose_name="Телефон")
+    rating = models.PositiveSmallIntegerField(default=50, verbose_name="Рейтинг")
 
     class Meta:
         verbose_name = "Пользователь"

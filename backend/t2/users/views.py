@@ -8,7 +8,8 @@ from django.contrib.auth import authenticate
 from .models import Organization, Department
 from .serializers import (
     UserSerializer, UserCreateSerializer, UserUpdateSerializer,
-    ChangePasswordSerializer, OrganizationSerializer, DepartmentSerializer
+    ChangePasswordSerializer, OrganizationSerializer, DepartmentSerializer,
+    RatingUserSerializer
 )
 from .permissions import RolePermission
 
@@ -239,3 +240,16 @@ class DepartmentEmployeesAPIView(generics.ListAPIView):
             return User.objects.filter(department_id=department_id)
         else:
             return User.objects.none()
+
+
+class RatingsAPIView(generics.ListAPIView):
+    """
+    Рейтинг сотрудников.
+    GET /api/users/ratings/
+    """
+
+    serializer_class = RatingUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return User.objects.filter(role=User.RoleChoices.EMPLOYEE, is_active=True).order_by("-rating", "id")

@@ -23,6 +23,16 @@ urlpatterns = [
     path("", views.index, name="index"),
     path('admin/', admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
-    path("api/", include("schedule.urls")),
+
+    
+    # API Users
+    path('api/users/', include('users.urls')),
+    
+    # JWT Token endpoints
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # Schedule API
+    path("api/schedule/", include("schedule.urls")),
 
 ]
