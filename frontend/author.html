@@ -72,16 +72,24 @@
             document.getElementById('error-msg').style.display = 'none';
         }
 
-        // Заглушка для API
+        // Заглушка для API (демо)
+        // Тестовые доступы:
+        // - admin / admin12345 (роль: Администратор)
         async function fakeApiCall(username, password, role) {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    if (username === 'admin' && password === '1234') {
-                        resolve({ token: 'fake-jwt-token', user: { name: 'Дмитрий', role: role } });
-                    } else {
+                    if (!username || !password || !role) {
                         reject('Ошибка авторизации');
+                        return;
                     }
-                }, 1000);
+                    if (role === 'admin') {
+                        if (!(username === 'admin' && password === 'admin12345')) {
+                            reject('Ошибка авторизации');
+                            return;
+                        }
+                    }
+                    resolve({ token: 'fake-jwt-token', user: { name: username, role: role } });
+                }, 500);
             });
         }
 
@@ -101,8 +109,10 @@
                     selectedRole
                 );
                 console.log('Успех:', res);
-                // Перенаправление на основную страницу
-                window.location.href = 'empl.html'; 
+                localStorage.setItem('smartsheet.role', res.user.role);
+                localStorage.setItem('smartsheet.user', res.user.name);
+                // Перенаправление на рабочую область
+                window.location.href = 'empl.html';
             } catch (err) {
                 error.style.display = 'block';
                 btn.disabled = false;

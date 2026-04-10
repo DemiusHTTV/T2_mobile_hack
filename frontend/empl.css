@@ -76,3 +76,126 @@ body { font-family: 'Inter', sans-serif; background: #fff; overflow: hidden; }
 .chat-input-area input { flex-grow: 1; padding: 10px; border-radius: 8px; border: 1px solid #eee; outline: none; }
 .chat-input-area button { background: var(--accent-purple); color: #fff; border: none; width: 40px; border-radius: 8px; }
 .placeholder-card { background: #fff; padding: 40px; border-radius: 20px; text-align: center; }
+
+/* WORKLOAD (manager view) */
+.workload-summary {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #f0f0f0;
+    color: #444;
+    font-size: 13px;
+}
+.workload-title { font-weight: 800; color: var(--accent-purple); margin-bottom: 8px; }
+.workload-items { display: flex; flex-direction: column; gap: 6px; }
+.workload-item { background: #F7F1FF; border: 1px solid #EBD6FF; padding: 8px 10px; border-radius: 12px; text-align: left; }
+
+/* Calendar badge (required sum per weekday) */
+.workload-badge {
+    align-self: flex-start;
+    margin-top: auto;
+    background: var(--accent-purple);
+    color: #fff;
+    font-weight: 800;
+    font-size: 11px;
+    border-radius: 10px;
+    padding: 4px 8px;
+}
+
+/* Admin list */
+.admin-actions { margin: 20px 0 10px; }
+.workload-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; text-align: left; }
+.workload-empty { color: #777; font-size: 13px; }
+.workload-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #F9F9F9;
+    border: 1px solid #eee;
+    padding: 12px 14px;
+    border-radius: 14px;
+}
+.workload-row-title { font-weight: 800; color: #333; }
+.workload-row-sub { font-size: 13px; color: #666; margin-top: 2px; }
+.workload-del {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    background: #fff;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    color: #777;
+}
+.workload-del:hover { background: #fff2f2; border-color: #ffd7d7; color: #d33; }
+
+/* MODAL */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 2500;
+}
+.modal-overlay.show { display: flex; }
+.modal-window {
+    width: 100%;
+    max-width: 520px;
+    background: #fff;
+    border-radius: 24px 24px 0 0;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+.modal-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 800;
+}
+.modal-close {
+    border: none;
+    background: transparent;
+    font-size: 26px;
+    cursor: pointer;
+    color: #555;
+}
+.modal-body { padding: 18px 20px 20px; }
+.modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.modal-body .input-group { display: flex; flex-direction: column; gap: 6px; }
+.modal-body label { font-size: 12px; color: #777; font-weight: 700; }
+.modal-body input,
+.modal-body select {
+    padding: 12px 12px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    outline: none;
+    font-family: inherit;
+}
+.modal-error {
+    display: none;
+    margin-top: 12px;
+    color: #b00020;
+    font-weight: 700;
+    font-size: 13px;
+}
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+.modal-actions button { flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; }
+.modal-actions .btn-confirm { background: #A5A6F6; }
+.modal-actions .btn-sub { background: #EBD6FF; color: var(--accent-purple); }
+
+@media (max-width: 768px) {
+    .modal-grid { grid-template-columns: 1fr; }
+}
