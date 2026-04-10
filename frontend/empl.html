@@ -40,7 +40,7 @@
                 <div class="calendar-wrapper">
                     <div class="calendar-grid" id="calendar-grid">
                         <div class="weekday">Пн</div><div class="weekday">Вт</div><div class="weekday">Ср</div><div class="weekday">Чт</div><div class="weekday">Пт</div><div class="weekday">Сб</div><div class="weekday">Вс</div>
-<<<<<<< HEAD
+
                         <div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div>
                         <div class="day-cell"><span>1</span></div><div class="day-cell"><span>2</span></div><div class="day-cell"><span>3</span></div>
                         <div class="day-cell"><span>4</span></div><div class="day-cell"><span>5</span></div><div class="day-cell"><span>6</span></div><div class="day-cell"><span>7</span></div>
@@ -62,13 +62,12 @@
                     <div class="action-buttons">
                         <button class="btn-sub" id="btn-sub">Нужна подмена</button>
                         <button class="btn-confirm" id="btn-confirm">Подтвердить смену</button>
-=======
->>>>>>> 0f9c9d7 (feat: modified view for employeers)
+
                     </div>
                 </div>
             </section>
 
-<<<<<<< HEAD
+
             <section class="content-section" id="team">
                 <div class="placeholder-card"><h2>Команда</h2><p>Список сотрудников в сети.</p></div>
             </section>
@@ -89,11 +88,14 @@
                     <div class="workload-list" id="workload-list"></div>
                 </div>
             </section>
-=======
+
             <section class="content-section" id="team"><div class="placeholder-card"><h2>Команда</h2></div></section>
             <section class="content-section" id="settings"><div class="placeholder-card"><h2>Настройки</h2></div></section>
             <section class="content-section" id="rating"><div class="placeholder-card"><h2>Рейтинг</h2></div></section>
->>>>>>> 0f9c9d7 (feat: modified view for employeers)
+
+            <section class="content-section" id="team"><div class="placeholder-card"><h2>Команда</h2></div></section>
+            <section class="content-section" id="settings"><div class="placeholder-card"><h2>Настройки</h2></div></section>
+            <section class="content-section" id="rating"><div class="placeholder-card"><h2>Рейтинг</h2></div></section>
         </main>
     </div>
 
@@ -176,7 +178,7 @@
         const burger = document.getElementById('burger-btn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-<<<<<<< HEAD
+
         const sections = document.querySelectorAll('.content-section');
         const btnWorkloadOpen = document.getElementById('btn-workload-open');
         const workloadModal = document.getElementById('workload-modal');
@@ -187,10 +189,13 @@
         const workloadSummary = document.getElementById('workload-summary');
         const workloadList = document.getElementById('workload-list');
         const shiftTitle = document.getElementById('shift-title');
-=======
+
         const closeChat = document.getElementById('close-chat');
         let selectedDayCell = null;
->>>>>>> 0f9c9d7 (feat: modified view for employeers)
+
+        const closeChat = document.getElementById('close-chat');
+        let selectedDayCell = null;
+
 
         // Календарь (31 день)
         for(let i=0; i<3; i++) grid.innerHTML += '<div class="day-cell empty"></div>';
@@ -216,7 +221,7 @@
         burger.onclick = toggleMenu;
         overlay.onclick = toggleMenu;
 
-<<<<<<< HEAD
+<
         function bindNavigation() {
             document.querySelectorAll('.menu-link').forEach(link => {
                 link.onclick = (e) => {
@@ -468,7 +473,7 @@
         renderWorkloadSummary();
 
         function sendMsg() {
-=======
+
         // Навигация
         document.querySelectorAll('.menu-link').forEach(link => {
             link.onclick = (e) => {
@@ -488,6 +493,27 @@
             selectedDayCell.querySelector('.shift-tag').textContent = 'ПРИНЯТО';
             modal.classList.remove('show');
         };
+
+        // Навигация
+        document.querySelectorAll('.menu-link').forEach(link => {
+            link.onclick = (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                link.classList.add('active');
+                document.getElementById(link.getAttribute('data-target')).classList.add('active');
+                if(window.innerWidth <= 768) toggleMenu();
+            };
+        });
+
+        // Модалка и Чат
+        document.getElementById('close-modal').onclick = () => modal.classList.remove('show');
+        document.getElementById('btn-confirm-shift').onclick = () => {
+            selectedDayCell.className = 'day-cell work-day';
+            selectedDayCell.querySelector('.shift-tag').textContent = 'ПРИНЯТО';
+            modal.classList.remove('show');
+        };
+
         document.getElementById('btn-need-sub').onclick = () => {
             modal.classList.remove('show');
             chatBot.classList.add('show');
@@ -495,7 +521,7 @@
         closeChat.onclick = () => chatBot.classList.remove('show');
         
         document.getElementById('send-btn').onclick = function() {
->>>>>>> 0f9c9d7 (feat: modified view for employeers)
+
             const val = document.getElementById('user-input').value.trim();
             if(!val) return;
             const uM = document.createElement('div'); uM.className = 'msg user'; uM.textContent = val;
