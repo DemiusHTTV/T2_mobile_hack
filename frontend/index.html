@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSheet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">SMARTSHEET</div>
+            <nav class="menu">
+                <a href="#" class="active">График</a>
+                <a href="#">Команда</a>
+                <a href="#">Настройки</a>
+                <a href="#">Рейтинг</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <button class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <h1 class="page-title">Панель управления сменами</h1>
+                <button class="btn-optimize">ОПТИМИЗИРОВАТЬ</button>
+            </header>
+
+            <section class="board">
+                <div class="shift-group">
+                    <div class="time-column">
+                        <div class="time-content">
+                            <span class="shift-name">Утро</span>
+                            <span class="shift-hours">8:00–12:00</span>
+                        </div>
+                    </div>
+                    <div class="drop-area">
+                        <div class="employee-card">
+                            <span class="name">Трубачев Дмитрий</span>
+                            <span class="role">продавец</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="shift-group">
+                    <div class="time-column">
+                        <div class="time-content">
+                            <span class="shift-name">День</span>
+                            <span class="shift-hours">12:30–16:00</span>
+                        </div>
+                    </div>
+                    <div class="drop-area"></div>
+                </div>
+
+                <div class="shift-group">
+                    <div class="time-column">
+                        <div class="time-content">
+                            <span class="shift-name">Вечер</span>
+                            <span class="shift-hours">16:00–20:00</span>
+                        </div>
+                    </div>
+                    <div class="drop-area"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script> 
+    const hb = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+
+    hb.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sidebar.classList.toggle('open');
+    
+    // Делаем полоски прозрачными при открытии
+    if (sidebar.classList.contains('open')) {
+        hb.style.opacity = '0'; 
+    } else {
+        hb.style.opacity = '1';
+    }
+});
+
+// Закрываем меню и возвращаем полоски при клике на сайдбар
+    sidebar.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    hb.style.opacity = '1';
+});
+
+// Закрытие при клике по контенту
+document.addEventListener('click', (e) => {
+    if (!sidebar.contains(e.target) && e.target !== hb) {
+        sidebar.classList.remove('open');
+        hb.style.opacity = '1';
+    }
+});
+    </script>
+</body>
+</html>

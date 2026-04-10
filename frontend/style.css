@@ -1,0 +1,201 @@
+/* ОБНУЛЕНИЕ */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #fff;
+    overflow: hidden; /* Чтобы не было лишних скроллов */
+}
+
+.app-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 200px;
+    background-color: #FFFDEF;
+    border-right: 1px solid #E5E5E5;
+    padding: 30px 24px;
+    flex-shrink: 0;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 14px;
+    color: #A0A0A0;
+    margin-bottom: 50px;
+    letter-spacing: 0.1em;
+}
+
+.menu a {
+    display: block;
+    text-decoration: none;
+    color: #444;
+    font-size: 15px;
+    margin-bottom: 24px;
+}
+
+.menu a.active { font-weight: 700; color: #000; }
+
+/* MAIN CONTENT */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.header {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid #F0F0F0;
+    background: #fff;
+    position: relative;
+}
+
+/* КНОПКА ГАМБУРГЕР */
+.hamburger {
+    display: none; /* Скрыта на ПК */
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 2000;
+    transition: opacity 0.3s ease; /* Плавное исчезновение */
+}
+
+.hamburger span {
+    width: 22px;
+    height: 2px;
+    background: #333;
+}
+
+.page-title {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: #666;
+}
+
+.btn-optimize {
+    background-color: #EBD6FF;
+    color: #9B51E0;
+    border: 1px solid #DDBBFF;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* BOARD (Фиолетовая зона) */
+.board {
+    background-color: #9B94B3;
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.shift-group {
+    flex: 1;
+    display: flex;
+    gap: 15px;
+}
+
+.time-column {
+    width: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.time-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+}
+
+.shift-name { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+.shift-hours { font-size: 10px; opacity: 0.7; }
+
+/* DROP AREA */
+.drop-area {
+    flex-grow: 1;
+    background-color: #E2F9D3;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* КАРТОЧКА (ШИРОКАЯ КАК НА ФОТО) */
+.employee-card {
+    background: #FFFFFF;
+    width: 100%;
+    max-width: 450px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.employee-card .name {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.employee-card .role {
+    font-size: 12px;
+    color: #888;
+}
+
+/* МОБИЛКА */
+@media (max-width: 768px) {
+    .hamburger { display: flex; }
+
+    .sidebar {
+        position: fixed;
+        left: 0; top: 0; bottom: 0;
+        transform: translateX(-100%);
+    }
+
+    .sidebar.open { transform: translateX(0); }
+
+    .page-title {
+        font-size: 13px;
+        text-align: center;
+        margin: 0 10px;
+    }
+
+    .btn-optimize {
+        padding: 6px 10px;
+        font-size: 10px;
+    }
+
+    .board { padding: 10px; }
+    .employee-card { max-width: 280px; }
+}
