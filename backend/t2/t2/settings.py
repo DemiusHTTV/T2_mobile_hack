@@ -20,12 +20,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = 'django-insecure-uju$)tzh28=sn!h3k1#y64yir!qjb6q$e&7omo_d3$nrpkwyoi'
+
+SECRET_KEY = 'django-insecure-xo+!33(431lyvoay@h%lqh7(7hw0$oqvq-pv-p^6+ktm)yzkf3'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
 ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
+
 
 
 # Application definition
@@ -37,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     
     # Third party
     'rest_framework',
@@ -44,11 +53,17 @@ INSTALLED_APPS = [
     
     # Local apps
     'users',
+
+    'schedule',
+
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    'django.middleware.locale.LocaleMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -61,7 +76,11 @@ ROOT_URLCONF = 't2.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+
         'DIRS': [],
+
+        'DIRS': [BASE_DIR / 'templates'],
+
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -109,9 +128,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
+
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+
+LANGUAGE_CODE = 'ru-ru'
+
+TIME_ZONE = 'Asia/Irkutsk'
+
 
 USE_I18N = True
 
@@ -122,6 +146,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
@@ -155,3 +180,6 @@ SIMPLE_JWT = {
 # Timezone - Irkutsk (UTC+7)
 TIME_ZONE = 'Asia/Irkutsk'
 USE_TZ = True
+
+LOGIN_URL = "/accounts/login/"
+
