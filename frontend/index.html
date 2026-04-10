@@ -25,12 +25,13 @@
         <main class="main-content">
             <header class="header">
                 <button class="hamburger" id="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span>
                 </button>
                 <h1 class="page-title" id="header-title">Панель управления</h1>
-                <button class="btn-optimize">ОПТИМИЗИРОВАТЬ</button>
+                <div class="header-actions">
+                    <button class="btn-assistant" id="open-ai-chat">AI Assistant</button>
+                    <button class="btn-optimize">ОПТИМИЗИРОВАТЬ</button>
+                </div>
             </header>
 
             <section class="board content-section active" id="board">
@@ -58,28 +59,29 @@
                 </div>
             </section>
 
-            <section class="content-section" id="team">
-                <div class="placeholder-content">
-                    <h2>Список команды</h2>
-                    <p>Здесь будет список всех сотрудников и их статусы.</p>
-                </div>
-            </section>
-
-            <section class="content-section" id="settings">
-                <div class="placeholder-content">
-                    <h2>Настройки системы</h2>
-                    <p>Настройка графиков, уведомлений и прав доступа.</p>
-                </div>
-            </section>
-
-            <section class="content-section" id="rating">
-                <div class="placeholder-content">
-                    <h2>Рейтинг сотрудников</h2>
-                    <p>Аналитика эффективности и выполнения планов.</p>
-                </div>
-            </section>
-
+            <section class="content-section" id="team"><div class="placeholder-content"><h2>Команда</h2></div></section>
+            <section class="content-section" id="settings"><div class="placeholder-content"><h2>Настройки</h2></div></section>
+            <section class="content-section" id="rating"><div class="placeholder-content"><h2>Рейтинг</h2></div></section>
         </main>
+    </div>
+
+    <div class="chat-overlay" id="ai-chat-overlay">
+        <div class="chat-window">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="ai-status-dot"></div>
+                    <span class="chat-title">Smart Assistant</span>
+                </div>
+                <button id="close-chat" class="chat-close-btn">×</button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="msg bot">Привет! Я твой интеллектуальный помощник SmartSheet. Чем я могу помочь тебе сегодня?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="user-input" placeholder="Спросите что угодно...">
+                <button id="send-btn">➤</button>
+            </div>
+        </div>
     </div>
 
     <script> 
@@ -89,32 +91,30 @@
         const sections = document.querySelectorAll('.content-section');
         const headerTitle = document.getElementById('header-title');
 
+        // Чат элементы
+        const chatOverlay = document.getElementById('ai-chat-overlay');
+        const openChatBtn = document.getElementById('open-ai-chat');
+        const closeChatBtn = document.getElementById('close-chat');
+        const sendBtn = document.getElementById('send-btn');
+        const userInput = document.getElementById('user-input');
+        const chatMessages = document.getElementById('chat-messages');
+
         // Переключение разделов
         menuLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                
-                // Убираем активный класс у ссылок и секций
                 menuLinks.forEach(l => l.classList.remove('active'));
                 sections.forEach(s => s.classList.remove('active'));
-
-                // Добавляем активный класс нажатой ссылке
                 link.classList.add('active');
-
-                // Показываем нужную секцию
                 const sectionId = link.getAttribute('data-section');
                 document.getElementById(sectionId).classList.add('active');
-
-                // Меняем заголовок
                 headerTitle.textContent = link.textContent;
-
-                // Закрываем мобильное меню
                 sidebar.classList.remove('open');
                 hb.style.opacity = '1';
             });
         });
 
-        // Логика гамбургера
+        // Гамбургер
         hb.addEventListener('click', (e) => {
             e.stopPropagation();
             sidebar.classList.toggle('open');
@@ -126,6 +126,38 @@
                 sidebar.classList.remove('open');
                 hb.style.opacity = '1';
             }
+        });
+
+        // ЛОГИКА АССИСТЕНТА
+        openChatBtn.onclick = () => chatOverlay.classList.add('show');
+        closeChatBtn.onclick = () => chatOverlay.classList.remove('show');
+        
+        chatOverlay.onclick = (e) => {
+            if (e.target === chatOverlay) chatOverlay.classList.remove('show');
+        };
+
+        function addMessage(text, type) {
+            const msg = document.createElement('div');
+            msg.className = `msg ${type}`;
+            msg.textContent = text;
+            chatMessages.appendChild(msg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        sendBtn.onclick = () => {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            userInput.value = '';
+
+            setTimeout(() => {
+                addMessage("Я анализирую ваш запрос... Как я могу оптимизировать вашу работу в SmartSheet?", "bot");
+            }, 1000);
+        };
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendBtn.click();
         });
     </script>
 </body>
