@@ -8,7 +8,7 @@
 body {
     font-family: 'Inter', sans-serif;
     background-color: #fff;
-    overflow: hidden; /* Чтобы не было лишних скроллов */
+    overflow: hidden;
 }
 
 .app-container {
@@ -42,6 +42,7 @@ body {
     color: #444;
     font-size: 15px;
     margin-bottom: 24px;
+    cursor: pointer;
 }
 
 .menu a.active { font-weight: 700; color: #000; }
@@ -52,6 +53,18 @@ body {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    position: relative;
+}
+
+/* Управление видимостью секций */
+.content-section {
+    display: none; /* Скрыто по умолчанию */
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.content-section.active {
+    display: flex; /* Показываем активную */
 }
 
 .header {
@@ -66,7 +79,7 @@ body {
 
 /* КНОПКА ГАМБУРГЕР */
 .hamburger {
-    display: none; /* Скрыта на ПК */
+    display: none;
     flex-direction: column;
     gap: 4px;
     background: none;
@@ -74,7 +87,7 @@ body {
     cursor: pointer;
     padding: 5px;
     z-index: 2000;
-    transition: opacity 0.3s ease; /* Плавное исчезновение */
+    transition: opacity 0.3s ease;
 }
 
 .hamburger span {
@@ -103,99 +116,45 @@ body {
     white-space: nowrap;
 }
 
-/* BOARD (Фиолетовая зона) */
-.board {
+/* BOARD / SECTIONS */
+.board, #team, #settings, #rating {
     background-color: #9B94B3;
-    flex-grow: 1;
     padding: 20px;
-    display: flex;
-    flex-direction: column;
     gap: 15px;
 }
 
-.shift-group {
-    flex: 1;
-    display: flex;
-    gap: 15px;
-}
-
-.time-column {
-    width: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.time-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-}
-
-.shift-name { font-size: 14px; font-weight: 600; color: #1a1a1a; }
-.shift-hours { font-size: 10px; opacity: 0.7; }
-
-/* DROP AREA */
-.drop-area {
+/* Стили для пустых разделов */
+.placeholder-content {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
     flex-grow: 1;
-    background-color: #E2F9D3;
-    border-radius: 12px;
-    padding: 15px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-}
-
-/* КАРТОЧКА (ШИРОКАЯ КАК НА ФОТО) */
-.employee-card {
-    background: #FFFFFF;
-    width: 100%;
-    max-width: 450px;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    color: #fff;
     text-align: center;
 }
 
-.employee-card .name {
-    display: block;
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
+.shift-group { flex: 1; display: flex; gap: 15px; }
+.time-column { width: 60px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+.time-content { display: flex; flex-direction: column; align-items: center; gap: 5px; writing-mode: vertical-rl; transform: rotate(180deg); }
+.shift-name { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+.shift-hours { font-size: 10px; opacity: 0.7; }
 
-.employee-card .role {
-    font-size: 12px;
-    color: #888;
-}
+.drop-area { flex-grow: 1; background-color: #E2F9D3; border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: center; }
+.employee-card { background: #FFFFFF; width: 100%; max-width: 450px; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+.employee-card .name { display: block; font-size: 16px; font-weight: 600; margin-bottom: 5px; }
+.employee-card .role { font-size: 12px; color: #888; }
 
 /* МОБИЛКА */
 @media (max-width: 768px) {
     .hamburger { display: flex; }
-
-    .sidebar {
-        position: fixed;
-        left: 0; top: 0; bottom: 0;
-        transform: translateX(-100%);
-    }
-
+    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
     .sidebar.open { transform: translateX(0); }
-
-    .page-title {
-        font-size: 13px;
-        text-align: center;
-        margin: 0 10px;
-    }
-
-    .btn-optimize {
-        padding: 6px 10px;
-        font-size: 10px;
-    }
-
-    .board { padding: 10px; }
+    .page-title { font-size: 13px; text-align: center; margin: 0 10px; }
+    .btn-optimize { padding: 6px 10px; font-size: 10px; }
+    .board, #team, #settings, #rating { padding: 10px; }
     .employee-card { max-width: 280px; }
 }

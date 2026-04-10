@@ -14,11 +14,11 @@
     <div class="app-container">
         <aside class="sidebar" id="sidebar">
             <div class="logo">SMARTSHEET</div>
-            <nav class="menu">
-                <a href="#" class="active">График</a>
-                <a href="#">Команда</a>
-                <a href="#">Настройки</a>
-                <a href="#">Рейтинг</a>
+            <nav class="menu" id="main-menu">
+                <a href="#" class="menu-link active" data-section="board">График</a>
+                <a href="#" class="menu-link" data-section="team">Команда</a>
+                <a href="#" class="menu-link" data-section="settings">Настройки</a>
+                <a href="#" class="menu-link" data-section="rating">Рейтинг</a>
             </nav>
         </aside>
 
@@ -29,12 +29,11 @@
                     <span></span>
                     <span></span>
                 </button>
-                
-                <h1 class="page-title">Панель управления сменами</h1>
+                <h1 class="page-title" id="header-title">Панель управления</h1>
                 <button class="btn-optimize">ОПТИМИЗИРОВАТЬ</button>
             </header>
 
-            <section class="board">
+            <section class="board content-section active" id="board">
                 <div class="shift-group">
                     <div class="time-column">
                         <div class="time-content">
@@ -49,59 +48,85 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="shift-group">
-                    <div class="time-column">
-                        <div class="time-content">
-                            <span class="shift-name">День</span>
-                            <span class="shift-hours">12:30–16:00</span>
-                        </div>
-                    </div>
+                    <div class="time-column"><div class="time-content"><span class="shift-name">День</span><span class="shift-hours">12:30–16:00</span></div></div>
                     <div class="drop-area"></div>
                 </div>
-
                 <div class="shift-group">
-                    <div class="time-column">
-                        <div class="time-content">
-                            <span class="shift-name">Вечер</span>
-                            <span class="shift-hours">16:00–20:00</span>
-                        </div>
-                    </div>
+                    <div class="time-column"><div class="time-content"><span class="shift-name">Вечер</span><span class="shift-hours">16:00–20:00</span></div></div>
                     <div class="drop-area"></div>
                 </div>
             </section>
+
+            <section class="content-section" id="team">
+                <div class="placeholder-content">
+                    <h2>Список команды</h2>
+                    <p>Здесь будет список всех сотрудников и их статусы.</p>
+                </div>
+            </section>
+
+            <section class="content-section" id="settings">
+                <div class="placeholder-content">
+                    <h2>Настройки системы</h2>
+                    <p>Настройка графиков, уведомлений и прав доступа.</p>
+                </div>
+            </section>
+
+            <section class="content-section" id="rating">
+                <div class="placeholder-content">
+                    <h2>Рейтинг сотрудников</h2>
+                    <p>Аналитика эффективности и выполнения планов.</p>
+                </div>
+            </section>
+
         </main>
     </div>
 
     <script> 
-    const hb = document.getElementById('hamburger');
-    const sidebar = document.getElementById('sidebar');
+        const hb = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const menuLinks = document.querySelectorAll('.menu-link');
+        const sections = document.querySelectorAll('.content-section');
+        const headerTitle = document.getElementById('header-title');
 
-    hb.addEventListener('click', (e) => {
-    e.stopPropagation();
-    sidebar.classList.toggle('open');
-    
-    // Делаем полоски прозрачными при открытии
-    if (sidebar.classList.contains('open')) {
-        hb.style.opacity = '0'; 
-    } else {
-        hb.style.opacity = '1';
-    }
-});
+        // Переключение разделов
+        menuLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Убираем активный класс у ссылок и секций
+                menuLinks.forEach(l => l.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
 
-// Закрываем меню и возвращаем полоски при клике на сайдбар
-    sidebar.addEventListener('click', () => {
-    sidebar.classList.remove('open');
-    hb.style.opacity = '1';
-});
+                // Добавляем активный класс нажатой ссылке
+                link.classList.add('active');
 
-// Закрытие при клике по контенту
-document.addEventListener('click', (e) => {
-    if (!sidebar.contains(e.target) && e.target !== hb) {
-        sidebar.classList.remove('open');
-        hb.style.opacity = '1';
-    }
-});
+                // Показываем нужную секцию
+                const sectionId = link.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+
+                // Меняем заголовок
+                headerTitle.textContent = link.textContent;
+
+                // Закрываем мобильное меню
+                sidebar.classList.remove('open');
+                hb.style.opacity = '1';
+            });
+        });
+
+        // Логика гамбургера
+        hb.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle('open');
+            hb.style.opacity = sidebar.classList.contains('open') ? '0' : '1';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && e.target !== hb) {
+                sidebar.classList.remove('open');
+                hb.style.opacity = '1';
+            }
+        });
     </script>
 </body>
 </html>
